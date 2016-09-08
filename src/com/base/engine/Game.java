@@ -17,7 +17,7 @@ public class Game
 				System.out.println("Released Up");
 		
 		if(Input.getMouseDown(1))
-			System.out.println("Pressed Right Mouse");
+			System.out.println("Pressed Right Mouse at " + Input.getMousePosition().toString());
 		if(Input.getMouseUp(1))
 			System.out.println("Released Right Mouse");
 	}

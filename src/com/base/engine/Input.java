@@ -106,4 +106,9 @@ public class Input
 	{
 		return upButtons.contains(mouseButton);
 	}
+	
+	public static Vector2f getMousePosition()
+	{
+		return new Vector2f(Mouse.getX(),Mouse.getY());
+	}
 }
