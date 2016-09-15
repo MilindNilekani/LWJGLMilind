@@ -2,7 +2,7 @@ package com.base.engine;
 
 public class MainComponent 
 {	
-	public static final int HEIGHT=800;
+	public static final int HEIGHT=600;
 	public static final int WIDTH=600;
 	public static final String TITLE="3D Java Game Engine";
 	public static final double FRAME_CAP=5000.0;
@@ -13,7 +13,6 @@ public class MainComponent
 	
 	public MainComponent()
 	{
-		System.out.print(RenderUtil.getOpenGLVersion());
 		RenderUtil.initGraphics();
 		isRunning=false;
 		game=new Game();
@@ -116,8 +115,8 @@ public class MainComponent
 	{
 		Window.createWindow(HEIGHT, WIDTH, TITLE);
 		
-		MainComponent game=new MainComponent();
+		MainComponent mc=new MainComponent();
 		
-		game.start();
+		mc.start();
 	}
 }
