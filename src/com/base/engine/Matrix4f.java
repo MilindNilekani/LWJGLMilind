@@ -18,6 +18,20 @@ public class Matrix4f
 		return this;
 	}
 	
+	public Matrix4f initProjection(float fov, float zN, float zF, float width, float height)
+	{
+		float aspectRatio=width/height;
+		float tanHalfFOV=(float)Math.tan(Math.toRadians(fov/2));
+		float zRange=zN-zF;
+		
+		m[0][0]=1/(tanHalfFOV*aspectRatio);	m[0][1]=0;				m[0][2]=0;				m[0][3]=0;
+		m[1][0]=0;							m[1][1]=1/tanHalfFOV;;	m[1][2]=0;				m[1][3]=0;
+		m[2][0]=0;							m[2][1]=0;				m[2][2]=(-zN-zF)/zRange;m[2][3]=2*zN*zF/zRange;
+		m[3][0]=0;							m[3][1]=0;				m[3][2]=1;				m[3][3]=0;
+		
+		return this;
+	}
+	
 	public Matrix4f initTranslation(float x, float y, float z)
 	{
 		m[0][0]=1;	m[0][1]=0;	m[0][2]=0;	m[0][3]=x;

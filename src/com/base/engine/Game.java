@@ -13,6 +13,7 @@ public class Game
 		//mesh=new Mesh();
 		shader=new Shader();
 		transform=new Transform();
+		transform.setProjection(70f, 0.1f, 1000f, Window.getWidth(), Window.getHeight());
 		/*
 		Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0)),
 				new Vertex(new Vector3f(0,1,0)),
@@ -52,15 +53,15 @@ public class Game
 	public void update()
 	{
 		temp+=Time.getDelta();
-		transform.setTranslation((float)Math.sin(temp), 0, 0);
+		transform.setTranslation((float)Math.sin(temp), 0, 5);
 		transform.setRotation(0,(float)Math.sin(temp)*180,0);
-		transform.setScale(0.7f*(float)Math.sin(temp),0.7f* (float)Math.sin(temp),0.7f* (float)Math.sin(temp));
+		//transform.setScale(0.7f*(float)Math.sin(temp),0.7f* (float)Math.sin(temp),0.7f* (float)Math.sin(temp));
 	}
 	
 	public void render()
 	{
 		shader.bind();
-		shader.setUniform("transform", transform.getTransformation());
+		shader.setUniform("transform", transform.getProjectedTransformation());
 		mesh.draw();
 	}
 }

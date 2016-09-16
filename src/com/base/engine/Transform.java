@@ -2,6 +2,12 @@ package com.base.engine;
 
 public class Transform 
 {
+	private static float zN;
+	private static float zF;
+	private static float width;
+	private static float height;
+	private static float fov;
+	
 	private Vector3f translation;
 	private Vector3f rotation;
 	private Vector3f scale;
@@ -16,6 +22,22 @@ public class Transform
 	}
 	public void setTranslation(Vector3f translation) {
 		this.translation = translation;
+	}
+	
+	public Matrix4f getProjectedTransformation()
+	{
+		Matrix4f transformationMatrix=getTransformation();
+		Matrix4f projectionMatrix= new Matrix4f().initProjection(fov, zN, zF, width, height);
+		return projectionMatrix.multiply(transformationMatrix);
+	}
+	
+	public static void setProjection(float fov, float zN, float zF, float width, float height)
+	{
+		Transform.fov=fov;
+		Transform.width=width;
+		Transform.height=height;
+		Transform.zN=zN;
+		Transform.zF=zF;
 	}
 	
 	public void setTranslation(float x, float y, float z) {
