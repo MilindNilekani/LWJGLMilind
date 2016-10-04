@@ -123,6 +123,11 @@ public class Vector3f
 		return null;
 	}
 	
+	public Vector3f abs()
+	{
+		return new Vector3f(Math.abs(x), Math.abs(y), Math.abs(z));
+	}
+	
 	public Vector3f cross(Vector3f other)
 	{
 		float a=y*other.getZ()- z*other.getY();

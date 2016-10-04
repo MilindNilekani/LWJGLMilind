@@ -26,6 +26,7 @@ public class Shader
 		glUseProgram(program);
 	}
 	
+	
 	public void addUniform(String uniform)
 	{
 		int uniformLocation=glGetUniformLocation(program, uniform);
@@ -37,6 +38,11 @@ public class Shader
 		}
 		
 		uniforms.put(uniform, uniformLocation);
+	}
+	
+	public void updateUniforms(Matrix4f worldMatrix, Matrix4f projectedMatrix, Material material)
+	{
+		
 	}
 	
 	public void setUniformi(String uniformName, int value)
