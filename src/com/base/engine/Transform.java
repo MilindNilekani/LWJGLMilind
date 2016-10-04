@@ -2,6 +2,8 @@ package com.base.engine;
 
 public class Transform 
 {
+	private static Camera camera;
+	
 	private static float zN;
 	private static float zF;
 	private static float width;
@@ -28,7 +30,11 @@ public class Transform
 	{
 		Matrix4f transformationMatrix=getTransformation();
 		Matrix4f projectionMatrix= new Matrix4f().initProjection(fov, zN, zF, width, height);
-		return projectionMatrix.multiply(transformationMatrix);
+		Matrix4f cameraRotation=new Matrix4f().initCameraRotation(camera.getForward(), camera.getUp());
+		Matrix4f cameraTranslation=new Matrix4f().initTranslation(-camera.getPos().getX(),-camera.getPos().getY(),-camera.getPos().getZ());
+		
+		return projectionMatrix.multiply(cameraRotation.multiply(cameraTranslation.multiply(transformationMatrix)));
+		//return projectionMatrix.multiply(transformationMatrix);
 	}
 	
 	public static void setProjection(float fov, float zN, float zF, float width, float height)
@@ -69,6 +75,12 @@ public class Transform
 	}
 	public void setScale(float x, float y, float z) {
 		this.scale = new Vector3f(x,y,z);
+	}
+	public static Camera getCamera() {
+		return camera;
+	}
+	public static void setCamera(Camera camera) {
+		Transform.camera = camera;
 	}
 	
 	

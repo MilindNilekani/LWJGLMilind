@@ -7,13 +7,19 @@ public class Game
 	private Mesh mesh;
 	private Shader shader;
 	private Transform transform;
+	private Camera camera;
 	public Game()
 	{
 		mesh=ResourceLoader.loadMesh("box.obj");
 		//mesh=new Mesh();
 		shader=new Shader();
+		camera=new Camera();
+		Transform.setProjection(70f, 0.1f, 1000f, Window.getWidth(), Window.getHeight());
+		Transform.setCamera(camera);
 		transform=new Transform();
-		transform.setProjection(70f, 0.1f, 1000f, Window.getWidth(), Window.getHeight());
+		
+		
+		
 		/*
 		Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0)),
 				new Vertex(new Vector3f(0,1,0)),
@@ -37,7 +43,8 @@ public class Game
 	
 	public void input()
 	{
-		if(Input.getKeyDown(Keyboard.KEY_UP))
+		camera.input();
+		/*if(Input.getKeyDown(Keyboard.KEY_UP))
 				System.out.println("Pressed Up");
 		if(Input.getKeyUp(Keyboard.KEY_UP))
 				System.out.println("Released Up");
@@ -45,7 +52,7 @@ public class Game
 		if(Input.getMouseDown(1))
 			System.out.println("Pressed Right Mouse at " + Input.getMousePosition().toString());
 		if(Input.getMouseUp(1))
-			System.out.println("Released Right Mouse");
+			System.out.println("Released Right Mouse");*/
 	}
 	
 	float temp=0.0f;

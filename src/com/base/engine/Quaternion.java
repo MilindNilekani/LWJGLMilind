@@ -39,9 +39,9 @@ public class Quaternion
 	public Quaternion multiply(Quaternion other)
 	{
 		float a=w*other.getW() - x*other.getX() -y*other.getY() -z*other.getZ();
-		float b=x*other.getW() +w*other.getX()+y*other.getZ()+z*other.getY();
-		float c=y*other.getW()+w*other.getY()+z*other.getX()+x*other.getZ();
-		float d=z*other.getW()+w*other.getZ()+x*other.getY()+y*other.getX();
+		float b=x*other.getW() +w*other.getX()+y*other.getZ()-z*other.getY();
+		float c=y*other.getW()+w*other.getY()+z*other.getX()-x*other.getZ();
+		float d=z*other.getW()+w*other.getZ()+x*other.getY()-y*other.getX();
 		return new Quaternion(b,c,d,a);
 	}
 	

@@ -1,5 +1,7 @@
 package com.base.engine;
 
+import org.lwjgl.input.Keyboard;
+
 public class Camera 
 {
 	public static final Vector3f yAxis=new Vector3f(0,1,0);
@@ -11,8 +13,8 @@ public class Camera
 	{
 		this(new Vector3f(0,0,0), new Vector3f(0,0,1), new Vector3f(0,1,0));
 	}
-	s
-	public Camera(Vector3f forward, Vector3f pos, Vector3f up)
+	
+	public Camera(Vector3f pos, Vector3f forward, Vector3f up)
 	{
 		this.pos=pos;
 		this.forward=forward;
@@ -22,21 +24,46 @@ public class Camera
 		forward.normalizeIntoUnitVector();
 	}
 	
-	public void move(Vector3f dir, Vector3f value)
+	public void input()
 	{
-		pos.add(dir.multiply(value));
+		float movAmt=(float)(10*Time.getDelta());
+		float rotAmt=(float)(100*Time.getDelta());
+		
+		if(Input.getKey(Keyboard.KEY_W))
+			move(getForward(), movAmt);
+		if(Input.getKey(Keyboard.KEY_S))
+			move(getForward(), -movAmt);
+		if(Input.getKey(Keyboard.KEY_A))
+			move(getLeft(), movAmt);
+		if(Input.getKey(Keyboard.KEY_D))
+			move(getRight(), movAmt);
+		
+		if(Input.getKey(Keyboard.KEY_UP))
+			rotateX(-rotAmt);
+		if(Input.getKey(Keyboard.KEY_DOWN))
+			rotateX(rotAmt);
+		if(Input.getKey(Keyboard.KEY_LEFT))
+			rotateY(-rotAmt);
+		if(Input.getKey(Keyboard.KEY_RIGHT))
+			rotateY(rotAmt);
+			
+	}
+	
+	public void move(Vector3f dir, float value)
+	{
+		pos=pos.add(dir.multiply(value));
 	}
 	
 	public Vector3f getLeft()
 	{
-		Vector3f left=up.cross(forward);
+		Vector3f left=forward.cross(up);
 		left.normalizeIntoUnitVector();
 		return left;
 	}
 	
 	public Vector3f getRight()
 	{
-		Vector3f right=forward.cross(up);
+		Vector3f right=up.cross(forward);
 		right.normalizeIntoUnitVector();
 		return right;
 	}
