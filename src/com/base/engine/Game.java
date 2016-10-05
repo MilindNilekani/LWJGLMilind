@@ -1,7 +1,5 @@
 package com.base.engine;
 
-import org.lwjgl.input.Keyboard;
-
 public class Game 
 {
 	private Mesh mesh;
@@ -22,21 +20,31 @@ public class Game
 		
 		transform=new Transform();
 		
-		Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0), new Vector2f(0,0)), 
+		Vertex[] vertices = new Vertex[] { new Vertex( new Vector3f(-1.0f, -1.0f, 0.5f),	new Vector2f(0.0f, 0.0f)),
+				        new Vertex( new Vector3f(0.0f, -1.0f, -1f),		new Vector2f(0.5f, 0.0f)),
+				        new Vertex( new Vector3f(1.0f, -1.0f, 0.5f),		new Vector2f(1.0f, 0.0f)),
+				        new Vertex( new Vector3f(0.0f, 1.0f, 0.0f),      new Vector2f(0.5f, 1.0f)) };
+				
+		int indices[] = { 0, 3, 1,
+				 		1, 3, 2,
+				 		2, 3, 0,
+				 		1, 2, 0 };
+		
+		/*Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0), new Vector2f(0,0)), 
 				new Vertex(new Vector3f(0,1,0), new Vector2f(0.5f,0)),
 				new Vertex(new Vector3f(1,-1,0), new Vector2f(1,0)),
 				new Vertex(new Vector3f(0,-1,1), new Vector2f(0.5f,1))};
-		
+		*/
 		/*Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0)), 
 				new Vertex(new Vector3f(0,1,0)),
 				new Vertex(new Vector3f(1,-1,0)),
 				new Vertex(new Vector3f(0,-1,1))};
 		*/
-		int[] indices=new int[]{3,1,0,
+		/*int[] indices=new int[]{3,1,0,
 								2,1,3,
 								0,1,2,
 								0,2,3};
-		
+		*/
 		mesh.addVertices(vertices, indices,true);
 		LightingShader.setAmbientLight(new Vector3f(0.2f,0.2f,0.2f));
 		LightingShader.setDirectionalLight(new DirectionalLight(new Light(new Vector3f(1,1,1),0.8f),new Vector3f(1,1,1)));
