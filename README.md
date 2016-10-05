@@ -1,4 +1,4 @@
-# LWJGLMilind
+# Harambe's Revenge
 
 Repository for Harambe's Revenge.
 
