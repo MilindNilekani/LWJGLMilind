@@ -3,9 +3,10 @@ package com.base.engine;
 public class Vertex 
 {
 	
-	public static final int SIZE=5;
+	public static final int SIZE=8;
 	private Vector3f pos;
 	private Vector2f tex;
+	private Vector3f normal;
 	
 	public Vertex(Vector3f pos)
 	{
@@ -14,8 +15,14 @@ public class Vertex
 	
 	public Vertex(Vector3f pos, Vector2f tex)
 	{
+		this(pos,tex, new Vector3f(0,0,0));
+	}
+	
+	public Vertex(Vector3f pos, Vector2f tex,Vector3f normal)
+	{
 		this.pos=pos;
 		this.tex=tex;
+		this.normal=normal;
 	}
 
 	public Vector3f getPos() {
@@ -32,5 +39,13 @@ public class Vertex
 
 	public void setTex(Vector2f tex) {
 		this.tex = tex;
+	}
+
+	public Vector3f getNormal() {
+		return normal;
+	}
+
+	public void setNormal(Vector3f normal) {
+		this.normal = normal;
 	}
 }

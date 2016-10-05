@@ -12,7 +12,7 @@ public class Game
 	public Game()
 	{
 		//mesh=ResourceLoader.loadMesh("box.obj");
-		material=new Material(ResourceLoader.loadTexture("test.png"), new Vector3f(0,1,1));
+		material=new Material(ResourceLoader.loadTexture("test.png"), new Vector3f(1,1,1));
 		mesh=new Mesh();
 		shader=LightingShader.getInstance();
 		camera=new Camera();
@@ -37,8 +37,9 @@ public class Game
 								0,1,2,
 								0,2,3};
 		
-		mesh.addVertices(vertices, indices);
-		LightingShader.setAmbientLight(new Vector3f(0.1f,0.1f,0.1f));
+		mesh.addVertices(vertices, indices,true);
+		LightingShader.setAmbientLight(new Vector3f(0.2f,0.2f,0.2f));
+		LightingShader.setDirectionalLight(new DirectionalLight(new Light(new Vector3f(1,1,1),0.8f),new Vector3f(1,1,1)));
 		/*shader.addVertexShader(ResourceLoader.loadShader("basicVertex.vs"));
 		shader.addFragmentShader(ResourceLoader.loadShader("basicFragment.fs"));
 		shader.compileShader();

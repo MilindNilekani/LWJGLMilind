@@ -9,7 +9,8 @@ private static final LightingShader instance=new LightingShader();
 		return instance;
 	}
 	
-	private static Vector3f ambientLight;
+	private static Vector3f ambientLight=new Vector3f(0.2f,0.2f,0.2f);
+	private static DirectionalLight directionalLight=new DirectionalLight(new Light(new Vector3f(1,1,1),0),new Vector3f(0,0,0));
 	
 	public LightingShader()
 	{
@@ -20,8 +21,12 @@ private static final LightingShader instance=new LightingShader();
 		compileShader();
 		
 		addUniform("transform");
+		addUniform("transformProjected");
 		addUniform("baseColor");
 		addUniform("ambientLight");
+		addUniform("dlight.light.color");
+		addUniform("dlight.light.intensity");
+		addUniform("dlight.direction");
 	}
 	
 
@@ -31,9 +36,11 @@ private static final LightingShader instance=new LightingShader();
 			material.getTexture().bind();
 		else
 			RenderUtil.unbindTextures();
-		setUniform("transform", projectedMatrix);
+		setUniform("transformProjected", projectedMatrix);
+		setUniform("transform", worldMatrix);
 		setUniform("baseColor", material.getColor());
 		setUniform("ambientLight", ambientLight);
+		setUniform("dlight", directionalLight);
 	}
 
 
@@ -44,6 +51,22 @@ private static final LightingShader instance=new LightingShader();
 
 	public static void setAmbientLight(Vector3f ambientLight) {
 		LightingShader.ambientLight = ambientLight;
+	}
+	
+	public static void setDirectionalLight(DirectionalLight directionalLight) {
+		LightingShader.directionalLight = directionalLight;
+	}
+	
+	public void setUniform(String uniformName, Light light)
+	{
+		setUniform(uniformName+".color", light.getColor());
+		setUniformf(uniformName+".intensity", light.getIntensity());
+	}
+	
+	public void setUniform(String uniformName, DirectionalLight dlight)
+	{
+		setUniform(uniformName + ".light", dlight.getLight());
+		setUniform(uniformName + ".direction", dlight.getDirection());
 	}
 
 }
