@@ -27,6 +27,9 @@ private static final LightingShader instance=new LightingShader();
 		addUniform("dlight.light.color");
 		addUniform("dlight.light.intensity");
 		addUniform("dlight.direction");
+		addUniform("reflectionIntensity");
+		addUniform("reflection_spreadConeIntensity");
+		addUniform("eyePos");
 	}
 	
 
@@ -41,6 +44,9 @@ private static final LightingShader instance=new LightingShader();
 		setUniform("baseColor", material.getColor());
 		setUniform("ambientLight", ambientLight);
 		setUniform("dlight", directionalLight);
+		setUniformf("reflectionIntensity", material.getReflectionIntensity());
+		setUniformf("reflection_spreadConeIntensity",material.getReflection_spreadConeIntensity());
+		setUniform("eyePos", Transform.getCamera().getPos());
 	}
 
 

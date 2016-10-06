@@ -2,7 +2,7 @@
 
 in vec2 texCoord0;
 in vec3 normal0;
-
+in vec3 worldPos0;
 
 struct Light
 {
@@ -17,8 +17,11 @@ struct DirectionalLight
 };
 
 uniform sampler2D sampler;
+uniform vec3 eyePos;
 uniform vec3 ambientLight;
 uniform vec3 baseColor;
+uniform float reflectionIntensity;
+uniform float reflection_spreadConeIntensity; 
 
 uniform DirectionalLight dlight;
 
@@ -27,12 +30,24 @@ vec4 calculateLight(Light light, vec3 direction, vec3 normal)
 	float diffuse=dot(normal, -direction);
 	
 	vec4 diffuseColor=vec4(0,0,0,0);
-	
+	vec4 reflectColor=vec4(0,0,0,0);
 	if(diffuse>0)
 	{
 			diffuseColor=vec4(light.color,1.0) * light.intensity * diffuse;
+			
+			vec3 directionToEye=normalize(eyePos-worldPos0);
+			vec3 reflectDirection=normalize(reflect(direction, normal));
+			
+			float reflectFactor=dot(directionToEye,reflectDirection);
+			reflectFactor=pow(reflectFactor,reflection_spreadConeIntensity);
+			
+			if(reflectFactor>0)
+			{
+				reflectColor=vec4(light.color,1.0)*reflectionIntensity*reflectFactor;
+			}
+			
 	}
-	return diffuseColor;
+	return diffuseColor + reflectColor;
 }
 
 vec4 calculateDirectionalLight(DirectionalLight dlight, vec3 normal)
