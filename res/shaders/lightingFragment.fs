@@ -6,6 +6,8 @@ in vec2 texCoord0;
 in vec3 normal0;
 in vec3 worldPos0;
 
+out vec4 FragColor;
+
 struct Light
 {
 	vec3 color;
@@ -80,7 +82,7 @@ vec4 calculatePointLight(PointLight pointLight, vec3 normal)
 	
 	vec4 color=calculateLight(pointLight.light, lightDirection, normal);
 	
-	float attenuation=pointLight.atten.const+pointLight.atten.linear*distanceFromPoint+pointLight.atten.exponent*distanceFromPoint*distanceFromPoint+0.0000001;
+	float attenuation=pointLight.atten.constant + pointLight.atten.linear*distanceFromPoint + pointLight.atten.exponent*distanceFromPoint*distanceFromPoint+0.0000001f;
 	
 	return color/attenuation;
 }
@@ -105,5 +107,5 @@ void main()
 		totalLight=totalLight+calculatePointLight(pointLights[i], normal);
 	}
 	
-	gl_FragColor=color * totalLight;
+	FragColor=color * totalLight;
 }

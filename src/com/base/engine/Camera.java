@@ -31,7 +31,7 @@ public class Camera
 	{
 		float sen=0.5f;
 		float movAmt=(float)(10*Time.getDelta());
-		//float rotAmt=(float)(100*Time.getDelta());
+		float rotAmt=(float)(100*Time.getDelta());
 		
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
@@ -55,7 +55,7 @@ public class Camera
 		if(Input.getKey(Keyboard.KEY_D))
 			move(getRight(), movAmt);
 		
-		/*if(Input.getKey(Keyboard.KEY_UP))
+		if(Input.getKey(Keyboard.KEY_UP))
 			rotateX(-rotAmt);
 		if(Input.getKey(Keyboard.KEY_DOWN))
 			rotateX(rotAmt);
@@ -63,7 +63,7 @@ public class Camera
 			rotateY(-rotAmt);
 		if(Input.getKey(Keyboard.KEY_RIGHT))
 			rotateY(rotAmt);
-			*/
+			
 		
 		if(mouseLocked)
 		{

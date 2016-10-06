@@ -1,7 +1,6 @@
 package com.base.engine;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
 public class RenderUtil
 {
