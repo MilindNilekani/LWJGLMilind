@@ -11,7 +11,7 @@ public class Game
 	PointLight pLight1=new PointLight(new Light(new Vector3f(1,0.5f,0),0.8f), new Attenuation(0,0,1), new Vector3f(-2,0,6), 10);
 	PointLight pLight2=new PointLight(new Light(new Vector3f(0,0.5f,1),0.8f), new Attenuation(0,0,1), new Vector3f(2,0,7), 10);
 	
-	SpotLight sLight1=new SpotLight(new PointLight(new Light(new Vector3f(1,0.5f,0),0.8f), new Attenuation(0,0,0.1f), new Vector3f(-2,0,6), 10), new Vector3f(1,1,1), 30f);
+	SpotLight sLight1=new SpotLight(new PointLight(new Light(new Vector3f(0,1f,1),0.8f), new Attenuation(0,0,0.1f), new Vector3f(-2,0,6), 30), new Vector3f(1,1,1), 0.7f);
 	
 	public Game()
 	{
@@ -53,12 +53,14 @@ public class Game
 		*/
 		mesh.addVertices(vertices, indices,true);
 		LightingShader.setAmbientLight(new Vector3f(0.2f,0.2f,0.2f));
-		//LightingShader.setDirectionalLight(new DirectionalLight(new Light(new Vector3f(1,1,1),0.8f),new Vector3f(1,1,1)));
+		LightingShader.setDirectionalLight(new DirectionalLight(new Light(new Vector3f(1,1,1),0.1f),new Vector3f(1,1,1)));
 		
 		
-		//LightingShader.setPointLight(new PointLight[]{pLight1,pLight2});
+		LightingShader.setPointLight(new PointLight[]{pLight1,pLight2});
 		
 		LightingShader.setSpotLight(new SpotLight[]{sLight1});
+		
+		
 		/*shader.addVertexShader(ResourceLoader.loadShader("basicVertex.vs"));
 		shader.addFragmentShader(ResourceLoader.loadShader("basicFragment.fs"));
 		shader.compileShader();
@@ -90,6 +92,9 @@ public class Game
 		
 		pLight1.setPosition(new Vector3f(3,0,8.0f*(float)(Math.sin(temp)+1.0/2.0)+10));
 		pLight2.setPosition(new Vector3f(7,0,8.0f*(float)(Math.cos(temp)+1.0/2.0)+10));
+		
+		sLight1.getPointLight().setPosition(camera.getPos());
+		sLight1.setDirection(camera.getForward());
 		//transform.setRotation(0,(float)Math.sin(temp)*180,0);
 		//transform.setScale(0.7f*(float)Math.sin(temp),0.7f* (float)Math.sin(temp),0.7f* (float)Math.sin(temp));
 	}

@@ -97,7 +97,7 @@ public class LightingShader extends Shader
 	
 	public static void setSpotLight(SpotLight[] spotLights)
 	{
-		if(pointLights.length > MAX_SPOT_LIGHTS)
+		if(spotLights.length > MAX_SPOT_LIGHTS)
 		{
 			System.err.println("Too many spot lights. Max allowed is " + MAX_SPOT_LIGHTS);
 			new Exception().printStackTrace();

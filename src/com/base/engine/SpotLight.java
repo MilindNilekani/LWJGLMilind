@@ -9,7 +9,7 @@ public class SpotLight
 	public SpotLight(PointLight pointLight, Vector3f direction, float cutoff) {
 		
 		this.pointLight = pointLight;
-		this.direction = direction;
+		this.direction = direction.normalizeIntoUnitVector();
 		this.cutoff = cutoff;
 	}
 	
@@ -23,7 +23,7 @@ public class SpotLight
 		return direction;
 	}
 	public void setDirection(Vector3f direction) {
-		this.direction = direction;
+		this.direction = direction.normalizeIntoUnitVector();
 	}
 	public float getCutoff() {
 		return cutoff;

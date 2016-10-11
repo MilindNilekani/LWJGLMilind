@@ -79,28 +79,6 @@ vec4 calculateLight(Light light, vec3 direction, vec3 normal)
 	return diffuseColor + reflectColor;
 }
 
-vec4 calculateSpotLight(SpotLight spotLight, vec3 normal)
-{
-	vec3 lightDirection=normalize(worldPos0-spotLight.pointLight.position);
-	
-	float spotFactor=dot(lightDirection,spotLight.direction);
-	
-	vec4 color=vec4(0,0,0,0);
-	
-	if(spotFactor> spotLight.cutoff)
-	{
-		color=calculatePointLight(spotLight.pointLight, normal) 
-					* (1.0-(1.0-spotFactor)/(1.0-spotLight.cutoff));
-	}
-	
-	return color;
-	
-}
-
-vec4 calculateDirectionalLight(DirectionalLight dlight, vec3 normal)
-{
-	return calculateLight(dlight.light, -dlight.direction, normal);
-}
 
 vec4 calculatePointLight(PointLight pointLight, vec3 normal)
 {
@@ -118,6 +96,29 @@ vec4 calculatePointLight(PointLight pointLight, vec3 normal)
 	
 	return color/attenuation;
 }
+
+vec4 calculateSpotLight(SpotLight spotLight, vec3 normal)
+{
+	vec3 lightDirection=normalize(worldPos0-spotLight.pointLight.position);
+	
+	float spotFactor=dot(lightDirection,spotLight.direction);
+	
+	vec4 color=vec4(0,0,0,0);
+	
+	if(spotFactor> spotLight.cutoff)
+	{
+		color=calculatePointLight(spotLight.pointLight, normal) 
+					* (1.0-(1.0-spotFactor)/(1.0-spotLight.cutoff));
+	}
+	
+	return color;
+	}
+
+vec4 calculateDirectionalLight(DirectionalLight dlight, vec3 normal)
+{
+	return calculateLight(dlight.light, -dlight.direction, normal);
+}
+
 
 void main()
 {
