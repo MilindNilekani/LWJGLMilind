@@ -15,7 +15,6 @@ public class Game
 	
 	public Game()
 	{
-		//mesh=ResourceLoader.loadMesh("box.obj");
 		material=new Material(ResourceLoader.loadTexture("test.png"), new Vector3f(1,1,1),1,8);
 		mesh=new Mesh();
 		shader=LightingShader.getInstance();
@@ -36,21 +35,6 @@ public class Game
 		int indices[] = { 0, 1, 2,
 				 		2,1,3 };
 		
-		/*Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0), new Vector2f(0,0)), 
-				new Vertex(new Vector3f(0,1,0), new Vector2f(0.5f,0)),
-				new Vertex(new Vector3f(1,-1,0), new Vector2f(1,0)),
-				new Vertex(new Vector3f(0,-1,1), new Vector2f(0.5f,1))};
-		*/
-		/*Vertex[] vertices=new Vertex[] {new Vertex(new Vector3f(-1,-1,0)), 
-				new Vertex(new Vector3f(0,1,0)),
-				new Vertex(new Vector3f(1,-1,0)),
-				new Vertex(new Vector3f(0,-1,1))};
-		*/
-		/*int[] indices=new int[]{3,1,0,
-								2,1,3,
-								0,1,2,
-								0,2,3};
-		*/
 		mesh.addVertices(vertices, indices,true);
 		LightingShader.setAmbientLight(new Vector3f(0.2f,0.2f,0.2f));
 		LightingShader.setDirectionalLight(new DirectionalLight(new Light(new Vector3f(1,1,1),0.1f),new Vector3f(1,1,1)));
@@ -60,27 +44,11 @@ public class Game
 		
 		LightingShader.setSpotLight(new SpotLight[]{sLight1});
 		
-		
-		/*shader.addVertexShader(ResourceLoader.loadShader("basicVertex.vs"));
-		shader.addFragmentShader(ResourceLoader.loadShader("basicFragment.fs"));
-		shader.compileShader();
-		
-		shader.addUniform("transform");
-		*/
 	}
 	
 	public void input()
 	{
 		camera.input();
-		/*if(Input.getKeyDown(Keyboard.KEY_UP))
-				System.out.println("Pressed Up");
-		if(Input.getKeyUp(Keyboard.KEY_UP))
-				System.out.println("Released Up");
-		
-		if(Input.getMouseDown(1))
-			System.out.println("Pressed Right Mouse at " + Input.getMousePosition().toString());
-		if(Input.getMouseUp(1))
-			System.out.println("Released Right Mouse");*/
 	}
 	
 	float temp=0.0f;
@@ -95,8 +63,6 @@ public class Game
 		
 		sLight1.getPointLight().setPosition(camera.getPos());
 		sLight1.setDirection(camera.getForward());
-		//transform.setRotation(0,(float)Math.sin(temp)*180,0);
-		//transform.setScale(0.7f*(float)Math.sin(temp),0.7f* (float)Math.sin(temp),0.7f* (float)Math.sin(temp));
 	}
 	
 	public void render()
