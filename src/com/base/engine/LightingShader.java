@@ -3,6 +3,7 @@ package com.base.engine;
 public class LightingShader extends Shader 
 {
 	private static final int MAX_POINT_LIGHTS=4;
+	private static final int MAX_SPOT_LIGHTS=4;
 	private static final LightingShader instance=new LightingShader();
 	
 	public static LightingShader getInstance()
@@ -13,6 +14,7 @@ public class LightingShader extends Shader
 	private static Vector3f ambientLight=new Vector3f(0.2f,0.2f,0.2f);
 	private static DirectionalLight directionalLight=new DirectionalLight(new Light(new Vector3f(1,1,1),0),new Vector3f(0,0,0));
 	private static PointLight[] pointLights=new PointLight[]{};
+	private static SpotLight[] spotLights=new SpotLight[]{};
 	public LightingShader()
 	{
 		super();
@@ -39,6 +41,20 @@ public class LightingShader extends Shader
 			addUniform("pointLights[" + i + "].atten.linear");
 			addUniform("pointLights[" + i + "].atten.exponent");
 			addUniform("pointLights[" + i + "].position");
+			addUniform("pointLights[" + i + "].range");
+		}
+		
+		for(int i=0;i<MAX_SPOT_LIGHTS;i++)
+		{
+			addUniform("spotLights[" + i + "].pointLight.light.color");
+			addUniform("spotLights[" + i + "].pointLight.light.intensity");
+			addUniform("spotLights[" + i + "].pointLight.atten.constant");
+			addUniform("spotLights[" + i + "].pointLight.atten.linear");
+			addUniform("spotLights[" + i + "].pointLight.atten.exponent");
+			addUniform("spotLights[" + i + "].pointLight.position");
+			addUniform("spotLights[" + i + "].pointLight.range");
+			addUniform("spotLights[" + i + "].direction");
+			addUniform("spotLights[" + i + "].cutoff");
 		}
 	}
 	
@@ -61,6 +77,10 @@ public class LightingShader extends Shader
 		{
 			setUniform("pointLights[" + i + "]", pointLights[i]);
 		}
+		for(int i=0;i<spotLights.length;i++)
+		{
+			setUniform("spotLights[" + i + "]", spotLights[i]);
+		}
 	}
 	
 	public static void setPointLight(PointLight[] pointLights)
@@ -73,6 +93,18 @@ public class LightingShader extends Shader
 		}
 		
 		LightingShader.pointLights=pointLights;
+	}
+	
+	public static void setSpotLight(SpotLight[] spotLights)
+	{
+		if(pointLights.length > MAX_SPOT_LIGHTS)
+		{
+			System.err.println("Too many spot lights. Max allowed is " + MAX_SPOT_LIGHTS);
+			new Exception().printStackTrace();
+			System.exit(1);
+		}
+		
+		LightingShader.spotLights=spotLights;
 	}
 
 
@@ -108,6 +140,14 @@ public class LightingShader extends Shader
 		setUniformf(uniformName + ".atten.linear", pointLight.getAtten().getLinear());
 		setUniformf(uniformName + ".atten.exponent", pointLight.getAtten().getExponent());
 		setUniform(uniformName +".position", pointLight.getPosition());
+		setUniformf(uniformName +".range", pointLight.getRange());
+	}
+	
+	public void setUniform(String uniformName, SpotLight spotLight)
+	{
+		setUniform(uniformName+".pointLight", spotLight.getPointLight());
+		setUniform(uniformName+".direction",spotLight.getDirection());
+		setUniformf(uniformName+".cutoff",spotLight.getCutoff());
 	}
 
 }

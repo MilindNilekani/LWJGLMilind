@@ -8,8 +8,10 @@ public class Game
 	private Material material;
 	private Camera camera;
 	
-	PointLight pLight1=new PointLight(new Light(new Vector3f(1,0.5f,0),0.8f), new Attenuation(0,0,1), new Vector3f(-2,0,6));
-	PointLight pLight2=new PointLight(new Light(new Vector3f(0,0.5f,1),0.8f), new Attenuation(0,0,1), new Vector3f(2,0,7));
+	PointLight pLight1=new PointLight(new Light(new Vector3f(1,0.5f,0),0.8f), new Attenuation(0,0,1), new Vector3f(-2,0,6), 10);
+	PointLight pLight2=new PointLight(new Light(new Vector3f(0,0.5f,1),0.8f), new Attenuation(0,0,1), new Vector3f(2,0,7), 10);
+	
+	SpotLight sLight1=new SpotLight(new PointLight(new Light(new Vector3f(1,0.5f,0),0.8f), new Attenuation(0,0,0.1f), new Vector3f(-2,0,6), 10), new Vector3f(1,1,1), 30f);
 	
 	public Game()
 	{
@@ -54,7 +56,9 @@ public class Game
 		//LightingShader.setDirectionalLight(new DirectionalLight(new Light(new Vector3f(1,1,1),0.8f),new Vector3f(1,1,1)));
 		
 		
-		LightingShader.setPointLight(new PointLight[]{pLight1,pLight2});
+		//LightingShader.setPointLight(new PointLight[]{pLight1,pLight2});
+		
+		LightingShader.setSpotLight(new SpotLight[]{sLight1});
 		/*shader.addVertexShader(ResourceLoader.loadShader("basicVertex.vs"));
 		shader.addFragmentShader(ResourceLoader.loadShader("basicFragment.fs"));
 		shader.compileShader();
