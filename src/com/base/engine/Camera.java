@@ -30,8 +30,8 @@ public class Camera
 	public void input()
 	{
 		float sen=0.5f;
-		float movAmt=(float)(10*Time.getDelta());
-		float rotAmt=(float)(100*Time.getDelta());
+		float movAmt=(float)(Time.getDelta());
+		float rotAmt=(float)(10*Time.getDelta());
 		
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
