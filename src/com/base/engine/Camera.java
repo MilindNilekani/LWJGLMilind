@@ -73,9 +73,9 @@ public class Camera
 			boolean rotX=deltaPos.getY()!=0;
 			
 			if(rotY)
-				rotateY(-deltaPos.getX()*sen);
+				rotateY(deltaPos.getX()*sen);
 			if(rotX)
-				rotateX(deltaPos.getY()*sen);
+				rotateX(-deltaPos.getY()*sen);
 			if(rotX || rotY)
 				Input.setMousePosition(new Vector2f(Window.getWidth()/2, Window.getHeight()/2));
 		}

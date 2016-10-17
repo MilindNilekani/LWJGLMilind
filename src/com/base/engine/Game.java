@@ -15,11 +15,12 @@ public class Game
 	SpotLight sLight1=new SpotLight(new PointLight(new Light(new Vector3f(0,1f,1),0.8f), new Attenuation(0,0,0.1f), new Vector3f(-2,0,6), 30), new Vector3f(1,1,1), 0.7f);
 	*/
 	private Level level;
+	private Player player;
 	public Game()
 	{
 		level=new Level("level1.png","test.png");
-
-		Transform.setCamera(new Camera());
+		player=new Player(new Vector3f(0,0.5f,0));
+		Transform.setCamera(player.getCamera());
 		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
 		
 		/*material=new Material(ResourceLoader.loadTexture("test.png"), new Vector3f(1,1,1),1,8);
@@ -56,7 +57,9 @@ public class Game
 	public void input()
 	{
 		//camera.input();
-		Transform.getCamera().input();
+		level.input();
+		player.input();
+		//Transform.getCamera().input();
 	}
 	
 	//float temp=0.0f;
@@ -72,12 +75,14 @@ public class Game
 		sLight1.getPointLight().setPosition(camera.getPos());
 		sLight1.setDirection(camera.getForward());
 		*/
-		
+		level.update();
+		player.update();
 	}
 	
 	public void render()
 	{
 		level.render();
+		player.render();
 		/*RenderUtil.setClearColor(Transform.getCamera().getPos().divide(2048f).abs());
 		shader.bind();
 		shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
