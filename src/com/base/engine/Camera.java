@@ -24,61 +24,8 @@ public class Camera
 		forward.normalizeIntoUnitVector();
 	}
 	
-	boolean mouseLocked=false;
-	Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
-	
 	public void input()
 	{
-		float sen=0.5f;
-		float movAmt=(float)(Time.getDelta());
-		float rotAmt=(float)(10*Time.getDelta());
-		
-		if(Input.getKey(Keyboard.KEY_ESCAPE))
-		{
-			Input.setCursor(true);
-			mouseLocked=false;
-		}
-		
-		if(Input.getMouseDown(0))
-		{
-			Input.setMousePosition(centerPosition);
-			Input.setCursor(false);
-			mouseLocked=true;
-		}
-		
-		if(Input.getKey(Keyboard.KEY_W))
-			move(getForward(), movAmt);
-		if(Input.getKey(Keyboard.KEY_S))
-			move(getForward(), -movAmt);
-		if(Input.getKey(Keyboard.KEY_A))
-			move(getLeft(), movAmt);
-		if(Input.getKey(Keyboard.KEY_D))
-			move(getRight(), movAmt);
-		
-		if(Input.getKey(Keyboard.KEY_UP))
-			rotateX(-rotAmt);
-		if(Input.getKey(Keyboard.KEY_DOWN))
-			rotateX(rotAmt);
-		if(Input.getKey(Keyboard.KEY_LEFT))
-			rotateY(-rotAmt);
-		if(Input.getKey(Keyboard.KEY_RIGHT))
-			rotateY(rotAmt);
-			
-		
-		if(mouseLocked)
-		{
-			Vector2f deltaPos=Input.getMousePosition().subtract(centerPosition);
-			
-			boolean rotY=deltaPos.getX()!=0;
-			boolean rotX=deltaPos.getY()!=0;
-			
-			if(rotY)
-				rotateY(deltaPos.getX()*sen);
-			if(rotX)
-				rotateX(-deltaPos.getY()*sen);
-			if(rotX || rotY)
-				Input.setMousePosition(new Vector2f(Window.getWidth()/2, Window.getHeight()/2));
-		}
 		
 	}
 	
