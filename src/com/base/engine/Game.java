@@ -1,7 +1,5 @@
 package com.base.engine;
 
-import java.util.ArrayList;
-
 public class Game 
 {
 	/*
@@ -16,136 +14,11 @@ public class Game
 	
 	SpotLight sLight1=new SpotLight(new PointLight(new Light(new Vector3f(0,1f,1),0.8f), new Attenuation(0,0,0.1f), new Vector3f(-2,0,6), 30), new Vector3f(1,1,1), 0.7f);
 	*/
-	
-	private static final float CUBE_WIDTH=1;
-	private static final float CUBE_HEIGHT=1;
-	private static final float CUBE_LENGTH=1;
-	
-	Bitmap level;
-	Shader shader;
-	Material material;
-	Mesh mesh;
-	Transform transform;
-	
+	private Level level;
 	public Game()
 	{
-		level=new Bitmap("level1.png").flipY();
-		mesh=new Mesh();
-		
-		shader=BasicShader.getInstance();
-		material=new Material(ResourceLoader.loadTexture("test.png"));
-		
-		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
-		ArrayList<Integer> indices=new ArrayList<Integer>();
-		transform=new Transform();
-		
-		
-		
-		for(int i=0;i<level.getWidth();i++)
-		{
-			for(int j=0;j<level.getHeight();j++)
-			{
-				if((level.getPixel(i, j) & 0xFFFFFF)==0)
-					continue;
-				
-				float xHigh=1;
-				float xLow=0;
-				float yHigh=1;
-				float yLow=0;
-				
-				//Floor
-				indices.add(vertices.size()+2);
-				indices.add(vertices.size()+1);
-				indices.add(vertices.size()+0);
-				indices.add(vertices.size()+3);
-				indices.add(vertices.size()+2);
-				indices.add(vertices.size()+0);
-				
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				
-				//Ceiling
-				indices.add(vertices.size()+0);
-				indices.add(vertices.size()+1);
-				indices.add(vertices.size()+2);
-				indices.add(vertices.size()+0);
-				indices.add(vertices.size()+2);
-				indices.add(vertices.size()+3);
-				
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				
-				//Wall
-				if((level.getPixel(i, j-1) & 0xFFFFFF)==0)
-				{
-					indices.add(vertices.size()+0);
-					indices.add(vertices.size()+1);
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+0);
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+3);
-					
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				}
-				if((level.getPixel(i, j+1) & 0xFFFFFF)==0)
-				{
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+1);
-					indices.add(vertices.size()+0);
-					indices.add(vertices.size()+3);
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+0);
-					
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				}
-				if((level.getPixel(i-1, j) & 0xFFFFFF)==0)
-				{
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+1);
-					indices.add(vertices.size()+0);
-					indices.add(vertices.size()+3);
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+0);
-					
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-					vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				}
-				if((level.getPixel(i+1, j) & 0xFFFFFF)==0)
-				{
-					indices.add(vertices.size()+0);
-					indices.add(vertices.size()+1);
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+0);
-					indices.add(vertices.size()+2);
-					indices.add(vertices.size()+3);
-					
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-					vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				}
-			}
-		}
-		
-		Vertex[] verticesArray=new Vertex[vertices.size()];
-		Integer[] indicesArray=new Integer[indices.size()];
-		
-		vertices.toArray(verticesArray);
-		indices.toArray(indicesArray);
-		mesh.addVertices(verticesArray, Util.toIntArray(indicesArray));
-		
+		level=new Level("level1.png","test.png");
+
 		Transform.setCamera(new Camera());
 		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
 		
@@ -204,9 +77,7 @@ public class Game
 	
 	public void render()
 	{
-		shader.bind();
-		shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
-		mesh.draw();
+		level.render();
 		/*RenderUtil.setClearColor(Transform.getCamera().getPos().divide(2048f).abs());
 		shader.bind();
 		shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
