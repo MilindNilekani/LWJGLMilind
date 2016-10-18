@@ -14,11 +14,11 @@ public class Game
 	
 	SpotLight sLight1=new SpotLight(new PointLight(new Light(new Vector3f(0,1f,1),0.8f), new Attenuation(0,0,0.1f), new Vector3f(-2,0,6), 30), new Vector3f(1,1,1), 0.7f);
 	*/
-	private Level level;
+	private static Level level;
 	private Player player;
 	public Game()
 	{
-		level=new Level("level1.png","wall.png","test.png","test.png");
+		level=new Level("level1.png","wall1.png","test.png","test.png");
 		player=new Player(new Vector3f(5.3f,0.4375f,4.5f));
 		Transform.setCamera(player.getCamera());
 		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
@@ -88,5 +88,10 @@ public class Game
 		shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
 		
 		mesh.draw();*/
+	}
+	
+	public static Level getLevel()
+	{
+		return level;
 	}
 }
