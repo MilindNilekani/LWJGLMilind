@@ -4,7 +4,7 @@ import org.lwjgl.input.Keyboard;
 
 public class Player {
 	private Camera camera;
-	boolean mouseLocked=false;
+	boolean mouseLocked=true;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
 	
