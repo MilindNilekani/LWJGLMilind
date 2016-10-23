@@ -8,6 +8,8 @@ public class Level
 	private static final float CUBE_HEIGHT=1;
 	private static final float CUBE_LENGTH=1;
 	
+	private static final int SPECIAL_TEXTURES=5;
+	
 	
 	private Bitmap level;
 	private Mesh meshWall, meshFloor,meshCeiling;
@@ -57,13 +59,13 @@ public class Level
 			for(int i = 0; i < level.getWidth(); i++)
 				for(int j = 0; j < level.getHeight(); j++)
 					if((level.getPixel(i,j) & 0xFFFFFF) == 0)
-						collisionVector = collisionVector.multiply(rectCollide(oldPos2, newPos2, objectSize, blockSize.multiply(new Vector2f(i,j)), blockSize));
+						collisionVector = collisionVector.multiply(AABB(oldPos2, newPos2, objectSize, blockSize.multiply(new Vector2f(i,j)), blockSize));
 		}
 		
 		return new Vector3f(collisionVector.getX(), 0, collisionVector.getY());
 	}
 	
-	private Vector2f rectCollide(Vector2f oldPos, Vector2f newPos, Vector2f size1, Vector2f pos2, Vector2f size2)
+	private Vector2f AABB(Vector2f oldPos, Vector2f newPos, Vector2f size1, Vector2f pos2, Vector2f size2)
 	{
 		Vector2f result = new Vector2f(0,0);
 		

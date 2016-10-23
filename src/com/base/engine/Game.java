@@ -18,8 +18,8 @@ public class Game
 	private Player player;
 	public Game()
 	{
-		level=new Level("level1.png","wall1.png","test.png","test.png");
-		player=new Player(new Vector3f(5.3f,0.4375f,4.5f));
+		level=new Level("levelTest.png","wallfinal.png","floor.png","test.png");
+		player=new Player(new Vector3f(7f,0.4375f,7f));
 		Transform.setCamera(player.getCamera());
 		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
 		

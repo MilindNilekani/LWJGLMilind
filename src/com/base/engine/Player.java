@@ -54,8 +54,8 @@ public class Player {
 			
 			if(rotY)
 				camera.rotateY(deltaPos.getX()*sen);
-			if(rotX)
-				camera.rotateX(-deltaPos.getY()*sen);
+			//if(rotX)
+			//	camera.rotateX(-deltaPos.getY()*sen);
 			if(rotX || rotY)
 				Input.setMousePosition(new Vector2f(Window.getWidth()/2, Window.getHeight()/2));
 		}
