@@ -27,9 +27,16 @@ public class Player {
 		
 		if(Input.getMouseDown(0))
 		{
-			Input.setMousePosition(centerPosition);
-			Input.setCursor(false);
-			mouseLocked=true;
+			if(!mouseLocked)
+			{
+				Input.setMousePosition(centerPosition);
+				Input.setCursor(false);
+				mouseLocked=true;
+			}
+			else
+			{
+				System.out.println("Shoot");
+			}
 		}
 		
 		movement=new Vector3f(0,0,0);

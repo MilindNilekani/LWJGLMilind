@@ -1,7 +1,5 @@
 package com.base.engine;
 
-import org.lwjgl.input.Keyboard;
-
 public class Camera 
 {
 	public static final Vector3f yAxis=new Vector3f(0,1,0);
