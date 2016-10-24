@@ -10,28 +10,31 @@ public class Level
 	private static final float CUBE_LENGTH=1;
 	
 	private Bitmap level;
-	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti;
-	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti;
-	private Material materialWall, materialFloor, materialCeiling, materialGrafitti;
+	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti, meshPictureFrame;
+	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti, shaderPictureFrame;
+	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame;
 	
 	private Transform transform;
-	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName)
+	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
 	{
 		level=new Bitmap(levelName).flipY();
 		meshWall=new Mesh();
 		meshFloor=new Mesh();
 		meshCeiling=new Mesh();
 		meshGrafitti=new Mesh();
+		meshPictureFrame=new Mesh();
 		
 		shaderWall=new BasicShader();
 		shaderFloor=new BasicShader();
 		shaderCeiling=new BasicShader();
 		shaderGrafitti=new BasicShader();
+		shaderPictureFrame=new BasicShader();
 		
 		materialWall=new Material(ResourceLoader.loadTexture(textureWallName));
 		materialFloor=new Material(ResourceLoader.loadTexture(textureFloorName));
 		materialCeiling=new Material(ResourceLoader.loadTexture(textureCeilingName));
 		materialGrafitti=new Material(ResourceLoader.loadTexture(textureGrafittiName));
+		materialPictureFrame=new Material(ResourceLoader.loadTexture(texturePictureFrameName));
 		
 		transform=new Transform();
 		
@@ -39,6 +42,7 @@ public class Level
 		generateWall(meshWall);
 		generateCeiling(meshCeiling);
 		generateGrafitti(meshGrafitti);
+		generatePictureFrame(meshPictureFrame);
 	}
 	
 	public void input()
@@ -61,7 +65,7 @@ public class Level
 			
 			for(int i = 0; i < level.getWidth(); i++)
 				for(int j = 0; j < level.getHeight(); j++)
-					if(level.getPixel(i,j) == -16777216)
+					if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 						collisionVector = collisionVector.multiply(AABB(oldPos2, newPos2, objectSize, blockSize.multiply(new Vector2f(i,j)), blockSize));
 		}
 		
@@ -109,6 +113,10 @@ public class Level
 		shaderGrafitti.bind();
 		shaderGrafitti.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialGrafitti);
 		meshGrafitti.draw();
+		
+		shaderPictureFrame.bind();
+		shaderPictureFrame.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialPictureFrame);
+		meshPictureFrame.draw();
 	}
 	
 	private void addFace(ArrayList<Integer> indices, int startLocation, boolean direction)
@@ -133,7 +141,7 @@ public class Level
 		}
 	}
 	
-	private void generateGrafitti(Mesh mNormal)
+	private void generatePictureFrame(Mesh m)
 	{
 		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
 		ArrayList<Integer> indices=new ArrayList<Integer>();
@@ -142,7 +150,85 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536)
+				
+				System.out.println(level.getPixel(i, j));
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+					continue;
+				
+				float xHigh=1;
+				float xLow=0;
+				float yHigh=1;
+				float yLow=0;
+				
+				//Wall
+				if(level.getPixel(i, j)==-1)
+				{
+					if(level.getPixel(i, j-1)==-16711936)
+					{
+						addFace(indices, vertices.size(), false);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+					if(level.getPixel(i, j+1)==-16711936)
+					{
+						addFace(indices, vertices.size(), true);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+					}
+					
+				
+					if(level.getPixel(i-1, j)==-16711936)
+					{
+						addFace(indices, vertices.size(), true);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+					}	
+					
+					
+					if(level.getPixel(i+1, j)==-16711936)
+					{
+						addFace(indices, vertices.size(), false);
+						
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+				}
+			}
+		}
+		
+		Vertex[] verticesArray=new Vertex[vertices.size()];
+		Integer[] indicesArray=new Integer[indices.size()];
+		
+		vertices.toArray(verticesArray);
+		indices.toArray(indicesArray);
+		m.addVertices(verticesArray, Util.toIntArray(indicesArray));
+		
+	}
+	
+	private void generateGrafitti(Mesh m)
+	{
+		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
+		ArrayList<Integer> indices=new ArrayList<Integer>();
+
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
 				
 				float xHigh=1;
@@ -204,7 +290,7 @@ public class Level
 		
 		vertices.toArray(verticesArray);
 		indices.toArray(indicesArray);
-		mNormal.addVertices(verticesArray, Util.toIntArray(indicesArray));
+		m.addVertices(verticesArray, Util.toIntArray(indicesArray));
 		
 	}
 	
@@ -217,7 +303,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536)
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
 				
 				float xHigh=1;
@@ -292,7 +378,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536)
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
 				
 				float xHigh=1;
@@ -328,7 +414,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536)
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
 				
 				float xHigh=1;

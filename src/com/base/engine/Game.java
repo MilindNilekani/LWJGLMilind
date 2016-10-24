@@ -6,7 +6,7 @@ public class Game
 	private Player player;
 	public Game()
 	{
-		level=new Level("levelTest.png","wallfinal.png","floor.png","ceiling.png", "grafitti.png");
+		level=new Level("levelTest.png","wallfinal.png","floor.png","ceiling.png", "grafitti.png", "poster.png");
 		player=new Player(new Vector3f(7f,0.4375f,7f));
 		Transform.setCamera(player.getCamera());
 		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
