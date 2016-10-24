@@ -36,8 +36,9 @@ public class Level
 		transform=new Transform();
 		
 		generateFloor(meshFloor);
-		generateWall(meshWall, meshGrafitti);
+		generateWall(meshWall);
 		generateCeiling(meshCeiling);
+		generateGrafitti(meshGrafitti);
 	}
 	
 	public void input()
@@ -132,13 +133,85 @@ public class Level
 		}
 	}
 	
-	private void generateWall(Mesh mNormal, Mesh mGrafitti)
+	private void generateGrafitti(Mesh mNormal)
 	{
 		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
 		ArrayList<Integer> indices=new ArrayList<Integer>();
+
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536)
+					continue;
+				
+				float xHigh=1;
+				float xLow=0;
+				float yHigh=1;
+				float yLow=0;
+				
+				//Wall
+				if(level.getPixel(i, j)==-1)
+				{
+					if(level.getPixel(i, j-1)==-65536)
+					{
+						addFace(indices, vertices.size(), false);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+					if(level.getPixel(i, j+1)==-65536)
+					{
+						addFace(indices, vertices.size(), true);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+					}
+					
+				
+					if(level.getPixel(i-1, j)==-65536)
+					{
+						addFace(indices, vertices.size(), true);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+					}	
+					
+					
+					if(level.getPixel(i+1, j)==-65536)
+					{
+						addFace(indices, vertices.size(), false);
+						
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+				}
+			}
+		}
 		
-		ArrayList<Vertex> verticesG=new ArrayList<Vertex>();
-		ArrayList<Integer> indicesG=new ArrayList<Integer>();
+		Vertex[] verticesArray=new Vertex[vertices.size()];
+		Integer[] indicesArray=new Integer[indices.size()];
+		
+		vertices.toArray(verticesArray);
+		indices.toArray(indicesArray);
+		mNormal.addVertices(verticesArray, Util.toIntArray(indicesArray));
+		
+	}
+	
+	private void generateWall(Mesh mNormal)
+	{
+		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
+		ArrayList<Integer> indices=new ArrayList<Integer>();
 
 		for(int i=0;i<level.getWidth();i++)
 		{
@@ -164,15 +237,6 @@ public class Level
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 					}
-					else if(level.getPixel(i, j-1)==-65536)
-					{
-						addFace(indicesG, verticesG.size(), false);
-						
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-					}
 					
 					if(level.getPixel(i, j+1)==-16777216)
 					{
@@ -183,15 +247,7 @@ public class Level
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
 					}
-					else if(level.getPixel(i, j+1)==-65536)
-					{
-						addFace(indicesG, verticesG.size(), true);
-						
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-					}
+					
 				
 					if(level.getPixel(i-1, j)==-16777216)
 					{
@@ -202,15 +258,7 @@ public class Level
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
 					}	
-					else if(level.getPixel(i-1, j)==-65536)
-					{
-						addFace(indicesG, verticesG.size(), true);
-						
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-						verticesG.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-					}
+					
 					
 					if(level.getPixel(i+1, j)==-16777216)
 					{
@@ -221,15 +269,7 @@ public class Level
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 					}
-					else if(level.getPixel(i+1, j)==-65536)
-					{
-						addFace(indicesG, verticesG.size(), false);
-						
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-						verticesG.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-					}
+					
 				}
 			}
 		}
@@ -241,12 +281,6 @@ public class Level
 		indices.toArray(indicesArray);
 		mNormal.addVertices(verticesArray, Util.toIntArray(indicesArray));
 		
-		Vertex[] verticesArrayG=new Vertex[verticesG.size()];
-		Integer[] indicesArrayG=new Integer[indicesG.size()];
-		
-		verticesG.toArray(verticesArrayG);
-		indicesG.toArray(indicesArrayG);
-		mGrafitti.addVertices(verticesArrayG, Util.toIntArray(indicesArrayG));
 	}
 	
 	private void generateFloor(Mesh m)
