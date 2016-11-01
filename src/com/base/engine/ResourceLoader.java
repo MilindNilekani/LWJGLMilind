@@ -1,10 +1,18 @@
 package com.base.engine;
 
 import java.io.BufferedReader;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.nio.ByteBuffer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import org.newdawn.slick.opengl.TextureLoader;
 
@@ -17,8 +25,52 @@ public class ResourceLoader
 		
 		try
 		{
-			int id=TextureLoader.getTexture(ext, new FileInputStream(new File("./res/textures/" + fileName))).getTextureID();
-			return new Texture(id);
+			BufferedImage image = ImageIO.read(new File("./res/textures/" + fileName));
+
+			boolean hasAlpha = image.getColorModel().hasAlpha();
+
+			int[] pixels = image.getRGB(0, 0, image.getWidth(),
+										image.getHeight(), null, 0, image.getWidth());
+
+			ByteBuffer buffer = Util.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+
+			for (int y = 0; y < image.getHeight(); y++)
+			{
+				for (int x = 0; x < image.getWidth(); x++)
+				{
+					int pixel = pixels[y * image.getWidth() + x];
+
+					buffer.put((byte) ((pixel >> 16) & 0xFF));
+					buffer.put((byte) ((pixel >> 8) & 0xFF));
+					buffer.put((byte) ((pixel >> 0) & 0xFF));
+					if (hasAlpha)
+						buffer.put((byte) ((pixel >> 24) & 0xFF));
+					else
+						buffer.put((byte) (0xFF));
+				}
+			}
+
+			buffer.flip();
+
+//			this.width = image.getWidth();
+//			this.height = image.getHeight();
+//			this.id = Engine.getRenderer().createTexture(width, height, buffer, true, true);
+//			this.frameBuffer = 0;
+//			this.pixels = null;
+
+			int texture = glGenTextures();
+			glBindTexture(GL_TEXTURE_2D, texture);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+			//return texture;
+			//int id=TextureLoader.getTexture(ext, new FileInputStream(new File("./res/textures/" + fileName))).getTextureID();
+			return new Texture(texture);
 		}
 		catch(Exception e)
 		{

@@ -9,8 +9,8 @@ void main()
 {
 	vec4 texColor=texture2D(sampler,texCoord0.xy);
 	
-	if(texColor==vec4(0,0,0,0))
-		gl_FragColor=vec4(color,1);
-	else
+	//if(texColor==vec4(0,0,0,0))
+	//	gl_FragColor=vec4(color,1);
+	//else
 		gl_FragColor=texColor*vec4(color,1);
 }

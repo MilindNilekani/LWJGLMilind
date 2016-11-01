@@ -151,7 +151,7 @@ public class Level
 			for(int j=0;j<level.getHeight();j++)
 			{
 				
-				System.out.println(level.getPixel(i, j));
+				//System.out.println(level.getPixel(i, j));
 				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
 				
