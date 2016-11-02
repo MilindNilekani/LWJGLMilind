@@ -21,6 +21,13 @@ public class Enemy
 	public static final int STATE_DYING=3;
 	public static final int STATE_DEAD=4;
 	
+	
+	public static final float MOVE_SPEED=1.0f;
+	public static final float STOP_CHASE_DISTANCE=2.0f;
+	
+	public static final float ENEMY_LENGTH=0.2f;
+	public static final float ENEMY_WIDTH=0.2f;
+	
 	private static Mesh mesh;
 	private Material material;
 	private Transform transform;
@@ -29,7 +36,7 @@ public class Enemy
 
 	public Enemy(Transform transform)
 	{
-		this.state=STATE_IDLE;
+		this.state=STATE_CHASE;
 		this.transform = transform;
 		shader=new BasicShader();
 		material = new Material(ResourceLoader.loadTexture("SSWVA1.png"));
@@ -48,27 +55,38 @@ public class Enemy
 		
 	}
 	
-	private void idleUpdate()
+	private void idleUpdate(Vector3f orientation, float distance)
 	{
 		
 	}
 	
-	private void chaseUpdate()
+	private void chaseUpdate(Vector3f orientation, float distance)
+	{
+		if(distance>STOP_CHASE_DISTANCE)
+		{	
+			Vector3f oldPos=transform.getTranslation();
+			Vector3f newPos=transform.getTranslation().add(orientation.multiply(-MOVE_SPEED*(float)Time.getDelta()));
+			
+			Vector3f collisionVector=Game.getLevel().checkCollision(oldPos, newPos, ENEMY_WIDTH, ENEMY_LENGTH);
+			Vector3f mov=collisionVector.multiply(orientation);
+			if(mov.length()>0)
+			{
+				transform.setTranslation(transform.getTranslation().add(mov.multiply(-MOVE_SPEED*(float)Time.getDelta())));
+			}
+		}
+	}
+	
+	private void attackUpdate(Vector3f orientation, float distance)
 	{
 		
 	}
 	
-	private void attackUpdate()
+	private void dyingUpdate(Vector3f orientation, float distance)
 	{
 		
 	}
 	
-	private void dyingUpdate()
-	{
-		
-	}
-	
-	private void deadUpdate()
+	private void deadUpdate(Vector3f orientation, float distance)
 	{
 		
 	}
@@ -78,9 +96,8 @@ public class Enemy
 		transform.getTranslation().setY(0.0f);
 	}
 	
-	private void enemyLookAtCamera()
+	private void enemyLookAtCamera(Vector3f dirToCamera)
 	{
-		Vector3f dirToCamera = transform.getTranslation().subtract(Transform.getCamera().getPos());
 		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
 		if(dirToCamera.getX() > 0)
 			angleCamera+=180;
@@ -90,25 +107,28 @@ public class Enemy
 
 	public void update()
 	{
+			Vector3f dirToCamera = transform.getTranslation().subtract(Transform.getCamera().getPos());
+			float distance=dirToCamera.length();
+			Vector3f orientation=dirToCamera.normalizeIntoUnitVector();
 			enemySetAtGround();
-			enemyLookAtCamera();
+			enemyLookAtCamera(orientation);
 			
 			switch(state)
 			{
 			case STATE_IDLE:
-				idleUpdate();
+				idleUpdate(orientation, distance);
 				break;
 			case STATE_CHASE:
-				chaseUpdate();
+				chaseUpdate(orientation, distance);
 				break;
 			case STATE_ATTACK:
-				attackUpdate();
+				attackUpdate(orientation, distance);
 				break;
 			case STATE_DYING:
-				dyingUpdate();
+				dyingUpdate(orientation, distance);
 				break;
 			case STATE_DEAD:
-				deadUpdate();
+				deadUpdate(orientation, distance);
 				break;
 			}
 	}
