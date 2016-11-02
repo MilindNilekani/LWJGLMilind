@@ -7,21 +7,15 @@ import static org.lwjgl.opengl.GL11.glTexImage2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import org.newdawn.slick.opengl.TextureLoader;
-
 public class ResourceLoader 
 {
 	public static Texture loadTexture(String fileName)
 	{
-		String[] splitArray=fileName.split("\\.");
-		String ext=splitArray[splitArray.length-1];
 		
 		try
 		{
@@ -52,12 +46,6 @@ public class ResourceLoader
 
 			buffer.flip();
 
-//			this.width = image.getWidth();
-//			this.height = image.getHeight();
-//			this.id = Engine.getRenderer().createTexture(width, height, buffer, true, true);
-//			this.frameBuffer = 0;
-//			this.pixels = null;
-
 			int texture = glGenTextures();
 			glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -67,8 +55,6 @@ public class ResourceLoader
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-
-			//return texture;
 			//int id=TextureLoader.getTexture(ext, new FileInputStream(new File("./res/textures/" + fileName))).getTextureID();
 			return new Texture(texture);
 		}

@@ -15,8 +15,13 @@ public class Level
 	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame;
 	
 	private Transform transform;
+	
+	private Enemy enemy;
 	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
 	{
+		Transform enemyT=new Transform();
+		enemyT.setTranslation(new Vector3f(8f,0f,8f));
+		enemy=new Enemy(enemyT);
 		level=new Bitmap(levelName).flipY();
 		meshWall=new Mesh();
 		meshFloor=new Mesh();
@@ -93,7 +98,7 @@ public class Level
 	
 	public void update()
 	{
-		
+		enemy.update();
 	}
 	
 	public void render()
@@ -117,6 +122,8 @@ public class Level
 		shaderPictureFrame.bind();
 		shaderPictureFrame.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialPictureFrame);
 		meshPictureFrame.draw();
+		
+		enemy.render();
 	}
 	
 	private void addFace(ArrayList<Integer> indices, int startLocation, boolean direction)
@@ -150,8 +157,6 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				
-				//System.out.println(level.getPixel(i, j));
 				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
 				
