@@ -1,6 +1,5 @@
 package com.base.engine;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 public class Level 
@@ -14,11 +13,17 @@ public class Level
 	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti, shaderPictureFrame;
 	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame;
 	
+	private ArrayList<Vector2f> collisionStart;
+	private ArrayList<Vector2f> collisionEnd;
+	
 	private Transform transform;
 	
 	private Enemy enemy;
 	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
 	{
+		collisionStart=new ArrayList<Vector2f>();
+		collisionEnd=new ArrayList<Vector2f>();
+		
 		Transform enemyT=new Transform();
 		enemyT.setTranslation(new Vector3f(8f,0f,8f));
 		enemy=new Enemy(enemyT);
@@ -96,6 +101,73 @@ public class Level
 		return result;
 	}
 	
+	public Vector2f checkCollisionOfBullet(Vector2f start, Vector2f end)
+	{
+		Vector2f nearest=null;
+		for(int i=0;i<collisionStart.size();i++)
+		{
+			Vector2f collision=findPointOfIntersection(start,end, collisionStart.get(i), collisionEnd.get(i));
+			
+			if(collision!=null && (nearest==null || nearest.subtract(start).length() > collision.subtract(start).length()))
+				nearest=collision;
+				
+		}
+		
+		return nearest;
+	}
+	
+	public Vector2f lineIntersectRect(Vector2f lineStart, Vector2f lineEnd,Vector2f pos, Vector2f size)
+	{
+		Vector2f res=null;
+		
+		//1st side
+		Vector2f collision=findPointOfIntersection(lineStart,lineEnd,pos, new Vector2f(pos.getX()+size.getX(), pos.getY()));
+		
+		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
+			res=collision;
+		
+		//2nd side
+		collision=findPointOfIntersection(lineStart,lineEnd,pos, new Vector2f(pos.getX(), pos.getY()+size.getY()));
+		
+		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
+			res=collision;
+		
+		//3rd side
+		collision=findPointOfIntersection(lineStart,lineEnd,new Vector2f(pos.getX(), pos.getY()+size.getY()), pos.add(size));
+				
+		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
+				res=collision;
+		
+		//4th side
+		collision=findPointOfIntersection(lineStart,lineEnd,new Vector2f(pos.getX()+size.getX(), pos.getY()), pos.add(size));
+						
+		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
+				res=collision;
+		
+		return res;
+	}
+	
+	private Vector2f findPointOfIntersection(Vector2f lineStart1, Vector2f lineEnd1,Vector2f lineStart2, Vector2f lineEnd2)
+	{
+		Vector2f line1=lineEnd1.subtract(lineStart1);
+		Vector2f line2=lineEnd2.subtract(lineStart2);
+		
+		float cross=line1.cross(line2);
+		if(cross==0)
+			return null;
+		
+		Vector2f distanceStart=lineStart2.subtract(lineStart1);
+		
+		float num1=distanceStart.cross(line2)/cross;
+		float num2=distanceStart.cross(line1)/cross;
+			
+		if(num1<1.0f && num1>0.0f && num2>0.0f && num2<1.0f)
+			return lineStart1.add(line1.multiply(num1));
+		
+		return null;
+			
+	}
+	
 	public void update()
 	{
 		enemy.update();
@@ -170,6 +242,8 @@ public class Level
 				{
 					if(level.getPixel(i, j-1)==-16711936)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
@@ -180,6 +254,8 @@ public class Level
 					
 					if(level.getPixel(i, j+1)==-16711936)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
@@ -191,6 +267,8 @@ public class Level
 				
 					if(level.getPixel(i-1, j)==-16711936)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
@@ -202,6 +280,8 @@ public class Level
 					
 					if(level.getPixel(i+1, j)==-16711936)
 					{
+						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
@@ -246,6 +326,8 @@ public class Level
 				{
 					if(level.getPixel(i, j-1)==-65536)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
@@ -256,6 +338,8 @@ public class Level
 					
 					if(level.getPixel(i, j+1)==-65536)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
@@ -267,6 +351,8 @@ public class Level
 				
 					if(level.getPixel(i-1, j)==-65536)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
@@ -278,6 +364,8 @@ public class Level
 					
 					if(level.getPixel(i+1, j)==-65536)
 					{
+						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
@@ -321,6 +409,8 @@ public class Level
 				{
 					if(level.getPixel(i, j-1)==-16777216)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
@@ -331,6 +421,8 @@ public class Level
 					
 					if(level.getPixel(i, j+1)==-16777216)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
@@ -342,6 +434,8 @@ public class Level
 				
 					if(level.getPixel(i-1, j)==-16777216)
 					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
@@ -353,6 +447,8 @@ public class Level
 					
 					if(level.getPixel(i+1, j)==-16777216)
 					{
+						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));

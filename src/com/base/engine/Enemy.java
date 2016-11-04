@@ -1,5 +1,7 @@
 package com.base.engine;
 
+import java.util.Random;
+
 public class Enemy
 {
 	public static final float SCALE = 0.7f;
@@ -27,16 +29,19 @@ public class Enemy
 	
 	public static final float ENEMY_LENGTH=0.2f;
 	public static final float ENEMY_WIDTH=0.2f;
+	public static final float SHOOT_DISTANCE=100.0f;
 	
 	private static Mesh mesh;
 	private Material material;
+	private Random random;
 	private Transform transform;
 	private Shader shader;
 	private int state;
 
 	public Enemy(Transform transform)
 	{
-		this.state=STATE_CHASE;
+		this.state=STATE_ATTACK;
+		this.random=new Random();
 		this.transform = transform;
 		shader=new BasicShader();
 		material = new Material(ResourceLoader.loadTexture("SSWVA1.png"));
@@ -78,6 +83,24 @@ public class Enemy
 	
 	private void attackUpdate(Vector3f orientation, float distance)
 	{
+		Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
+		Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ()).rotate((random.nextFloat()-0.5f)*10.0f);
+		Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
+		
+		Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
+		
+		Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
+		
+		if(playerIntersectVector!=null && (collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length()))
+		{
+			System.out.println("Hit player");
+			state=STATE_CHASE;
+		}
+			
+		if(collision==null)
+			System.out.println("Missed");
+		else
+			System.out.println("Hit");
 		
 	}
 	
@@ -99,7 +122,7 @@ public class Enemy
 	private void enemyLookAtCamera(Vector3f dirToCamera)
 	{
 		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
-		if(dirToCamera.getX() > 0)
+		if(dirToCamera.getX() < 0)
 			angleCamera+=180;
 		transform.getRotation().setY(angleCamera+90);
 	}
@@ -107,7 +130,7 @@ public class Enemy
 
 	public void update()
 	{
-			Vector3f dirToCamera = transform.getTranslation().subtract(Transform.getCamera().getPos());
+			Vector3f dirToCamera = Transform.getCamera().getPos().subtract(transform.getTranslation());
 			float distance=dirToCamera.length();
 			Vector3f orientation=dirToCamera.normalizeIntoUnitVector();
 			enemySetAtGround();

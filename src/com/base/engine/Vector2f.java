@@ -26,6 +26,11 @@ public class Vector2f
 		return x*other.getX() + y *other.getY();
 	}
 	
+	public float cross(Vector2f other)
+	{
+		return x*other.getY()-y*other.getX();
+	}
+	
 	public Vector2f normalizeIntoUnitVector()
 	{
 		float length=length();
