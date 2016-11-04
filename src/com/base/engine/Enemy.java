@@ -70,13 +70,13 @@ public class Enemy
 		if(distance>STOP_CHASE_DISTANCE)
 		{	
 			Vector3f oldPos=transform.getTranslation();
-			Vector3f newPos=transform.getTranslation().add(orientation.multiply(-MOVE_SPEED*(float)Time.getDelta()));
+			Vector3f newPos=transform.getTranslation().add(orientation.multiply(MOVE_SPEED*(float)Time.getDelta()));
 			
 			Vector3f collisionVector=Game.getLevel().checkCollision(oldPos, newPos, ENEMY_WIDTH, ENEMY_LENGTH);
 			Vector3f mov=collisionVector.multiply(orientation);
 			if(mov.length()>0)
 			{
-				transform.setTranslation(transform.getTranslation().add(mov.multiply(-MOVE_SPEED*(float)Time.getDelta())));
+				transform.setTranslation(transform.getTranslation().add(mov.multiply(MOVE_SPEED*(float)Time.getDelta())));
 			}
 		}
 	}
