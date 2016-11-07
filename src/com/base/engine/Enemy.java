@@ -95,9 +95,9 @@ public class Enemy
 				
 				Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
 				
-				Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
+				Vector2f playerIntersectVector=new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ());
 				
-				if(playerIntersectVector!=null && (collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length()))
+				if(collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length())
 				{
 					System.out.println("Seen player");
 					state=STATE_CHASE;
@@ -134,11 +134,11 @@ public class Enemy
 		double time=(double)Time.getTime()/(double)Time.SECOND;
 		double timeDecimals=(double)(time-(int)time);
 		
-		if(timeDecimals<0.5)
+		if(timeDecimals<0.25)
 		{
 			attack=true;
 		}
-		else
+		else if(timeDecimals<0.75)
 		{
 			if(attack)
 			{
@@ -155,9 +155,13 @@ public class Enemy
 							System.out.println("Hit player");
 			
 					}
-					state=STATE_CHASE;
 					attack=false;
 			}
+		}
+		else
+		{
+			state=STATE_CHASE;
+			attack=true;
 		}
 	}
 	
