@@ -25,7 +25,7 @@ public class Level
 		collisionEnd=new ArrayList<Vector2f>();
 		
 		Transform enemyT=new Transform();
-		enemyT.setTranslation(new Vector3f(8f,0f,8f));
+		enemyT.setTranslation(new Vector3f(12f,0f,12f));
 		enemy=new Enemy(enemyT);
 		level=new Bitmap(levelName).flipY();
 		meshWall=new Mesh();

@@ -23,6 +23,8 @@ public class Enemy
 	public static final int STATE_DYING=3;
 	public static final int STATE_DEAD=4;
 	
+	public static final float ATTACK_PROB=0.5f;
+	public static final int MAX_HEALTH=100;
 	
 	public static final float MOVE_SPEED=1.0f;
 	public static final float STOP_CHASE_DISTANCE=2.0f;
@@ -37,10 +39,16 @@ public class Enemy
 	private Transform transform;
 	private Shader shader;
 	private int state;
+	private boolean look;
+	private boolean attack;
+	private int health;
 
 	public Enemy(Transform transform)
 	{
-		this.state=STATE_ATTACK;
+		look=false;
+		this.state=STATE_IDLE;
+		health=MAX_HEALTH;
+		attack=false;
 		this.random=new Random();
 		this.transform = transform;
 		shader=new BasicShader();
@@ -57,16 +65,54 @@ public class Enemy
 									  0,2,3};
 
 			mesh.addVertices(vertices, indices);
-		
+	}
+	
+	public void damage(int dmg)
+	{
+		if(state==STATE_IDLE)
+			state=STATE_CHASE;
+		health-=dmg;
+		if(health<=0)
+			state=STATE_DYING;
 	}
 	
 	private void idleUpdate(Vector3f orientation, float distance)
 	{
+		double time=(double)Time.getTime()/(double)Time.SECOND;
+		double timeDecimals=(double)(time-(int)time);
+		
+		if(timeDecimals<0.5)
+		{
+			look=true;
+		}
+		else
+		{
+			if(look)
+			{
+				Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
+				Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ());
+				Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
+				
+				Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
+				
+				Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
+				
+				if(playerIntersectVector!=null && (collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length()))
+				{
+					System.out.println("Seen player");
+					state=STATE_CHASE;
+				}
+				
+				look=false;
+			}
+		}
 		
 	}
 	
 	private void chaseUpdate(Vector3f orientation, float distance)
 	{
+		if(random.nextDouble() < ATTACK_PROB * Time.getDelta())
+			state=STATE_ATTACK;
 		if(distance>STOP_CHASE_DISTANCE)
 		{	
 			Vector3f oldPos=transform.getTranslation();
@@ -79,34 +125,45 @@ public class Enemy
 				transform.setTranslation(transform.getTranslation().add(mov.multiply(MOVE_SPEED*(float)Time.getDelta())));
 			}
 		}
+		else
+			state=STATE_ATTACK;
 	}
 	
 	private void attackUpdate(Vector3f orientation, float distance)
 	{
-		Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
-		Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ()).rotate((random.nextFloat()-0.5f)*10.0f);
-		Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
+		double time=(double)Time.getTime()/(double)Time.SECOND;
+		double timeDecimals=(double)(time-(int)time);
 		
-		Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
-		
-		Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
-		
-		if(playerIntersectVector!=null && (collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length()))
+		if(timeDecimals<0.5)
 		{
-			System.out.println("Hit player");
-			state=STATE_CHASE;
+			attack=true;
 		}
-			
-		if(collision==null)
-			System.out.println("Missed");
 		else
-			System.out.println("Hit");
+		{
+			if(attack)
+			{
+					Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
+					Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ()).rotate((random.nextFloat()-0.5f)*10.0f);
+					Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
 		
+					Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
+		
+					Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
+		
+					if(playerIntersectVector!=null && (collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length()))
+					{
+							System.out.println("Hit player");
+			
+					}
+					state=STATE_CHASE;
+					attack=false;
+			}
+		}
 	}
 	
 	private void dyingUpdate(Vector3f orientation, float distance)
 	{
-		
+		state=STATE_DEAD;
 	}
 	
 	private void deadUpdate(Vector3f orientation, float distance)
