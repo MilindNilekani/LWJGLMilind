@@ -16,11 +16,23 @@ public class Level
 	private ArrayList<Vector2f> collisionStart;
 	private ArrayList<Vector2f> collisionEnd;
 	
+	
+	public ArrayList<Node> nodes=new ArrayList<Node>();
+	public class Node
+	{
+		Vector2f pos;
+		ArrayList<Node> neighbours=new ArrayList<Node>();
+	}
+	
 	private Transform transform;
 	
 	private Enemy enemy;
+	private Player player;
 	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
 	{
+		player=new Player(new Vector3f(7f,0.4375f,7f));
+		Transform.setCamera(player.getCamera());
+		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
 		collisionStart=new ArrayList<Vector2f>();
 		collisionEnd=new ArrayList<Vector2f>();
 		
@@ -57,7 +69,7 @@ public class Level
 	
 	public void input()
 	{
-		
+		player.input();
 	}
 	
 	public Vector3f checkCollision(Vector3f oldPos, Vector3f newPos, float objectWidth, float objectLength)
@@ -170,11 +182,14 @@ public class Level
 	
 	public void update()
 	{
+		player.update();
 		enemy.update();
 	}
 	
 	public void render()
 	{
+		player.render();
+		
 		shaderWall.bind();
 		shaderWall.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialWall);
 		meshWall.draw();
@@ -474,14 +489,13 @@ public class Level
 	{
 		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
 		ArrayList<Integer> indices=new ArrayList<Integer>();
-		
 		for(int i=0;i<level.getWidth();i++)
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
 				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
 					continue;
-				
+
 				float xHigh=1;
 				float xLow=0;
 				float yHigh=1;
@@ -494,7 +508,33 @@ public class Level
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
 				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				
+				Node n=new Node();
+				n.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j+0.5f)*CUBE_LENGTH);
+				if(level.getPixel(i-1, j)==-1)
+				{
+					Node left=new Node();
+					left.pos=new Vector2f((i-0.5f)*CUBE_WIDTH,(j+0.5f)*CUBE_LENGTH);
+					n.neighbours.add(left);
+				}
+				if(level.getPixel(i+1, j)==-1)
+				{
+					Node right=new Node();
+					right.pos=new Vector2f((i+1.5f)*CUBE_WIDTH, (j+0.5f)*CUBE_LENGTH);
+					n.neighbours.add(right);
+				}
+				if(level.getPixel(i, j-1)==-1)
+				{
+					Node up=new Node();
+					up.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j-0.5f)*CUBE_LENGTH);
+					n.neighbours.add(up);
+				}
+				if(level.getPixel(i, j+1)==-1)
+				{
+					Node down=new Node();
+					down.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j+1.5f)*CUBE_LENGTH);
+					n.neighbours.add(down);
+				}
+				nodes.add(n);
 			}
 		}
 		

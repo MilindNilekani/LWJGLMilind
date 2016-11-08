@@ -1,5 +1,6 @@
 package com.base.engine;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Enemy
@@ -38,13 +39,27 @@ public class Enemy
 	private Random random;
 	private Transform transform;
 	private Shader shader;
+	
 	private int state;
 	private boolean look;
 	private boolean attack;
 	private int health;
+	private static ArrayList<Texture> animations;
 
 	public Enemy(Transform transform)
 	{
+		if(animations==null)
+		{
+			animations=new ArrayList<Texture>();
+			animations.add(ResourceLoader.loadTexture("SSWVA1.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVB1.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVC1.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVD1.png"));
+			
+			animations.add(ResourceLoader.loadTexture("SSWVE0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVF0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVG0.png"));
+		}
 		look=false;
 		this.state=STATE_IDLE;
 		health=MAX_HEALTH;
@@ -52,7 +67,7 @@ public class Enemy
 		this.random=new Random();
 		this.transform = transform;
 		shader=new BasicShader();
-		material = new Material(ResourceLoader.loadTexture("SSWVA1.png"));
+		material = new Material(animations.get(0));
 		mesh=new Mesh();
 
 		
@@ -72,6 +87,7 @@ public class Enemy
 		if(state==STATE_IDLE)
 			state=STATE_CHASE;
 		health-=dmg;
+		System.out.println(health);
 		if(health<=0)
 			state=STATE_DYING;
 	}
@@ -84,9 +100,11 @@ public class Enemy
 		if(timeDecimals<0.5)
 		{
 			look=true;
+			material.setTexture(animations.get(0));
 		}
 		else
 		{
+			material.setTexture(animations.get(1));
 			if(look)
 			{
 				Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
@@ -111,6 +129,16 @@ public class Enemy
 	
 	private void chaseUpdate(Vector3f orientation, float distance)
 	{
+		double time=(double)Time.getTime()/(double)Time.SECOND;
+		double timeDecimals=(double)(time-(int)time);
+		if(timeDecimals < 0.25)
+			material.setTexture(animations.get(0));
+		else if(timeDecimals < 0.5)
+			material.setTexture(animations.get(1));
+		else if(timeDecimals < 0.75)
+			material.setTexture(animations.get(2));
+		else
+			material.setTexture(animations.get(3));
 		if(random.nextDouble() < ATTACK_PROB * Time.getDelta())
 			state=STATE_ATTACK;
 		if(distance>STOP_CHASE_DISTANCE)
@@ -136,10 +164,15 @@ public class Enemy
 		
 		if(timeDecimals<0.25)
 		{
-			attack=true;
+			material.setTexture(animations.get(4));
+		}
+		else if(timeDecimals<0.5)
+		{
+			material.setTexture(animations.get(5));
 		}
 		else if(timeDecimals<0.75)
 		{
+			material.setTexture(animations.get(6));
 			if(attack)
 			{
 					Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
@@ -160,9 +193,14 @@ public class Enemy
 		}
 		else
 		{
-			state=STATE_CHASE;
-			attack=true;
+			material.setTexture(animations.get(5));
+			if(timeDecimals>0.99f)
+			{
+				state=STATE_CHASE;
+				attack=true;
+			}
 		}
+		
 	}
 	
 	private void dyingUpdate(Vector3f orientation, float distance)
@@ -172,7 +210,7 @@ public class Enemy
 	
 	private void deadUpdate(Vector3f orientation, float distance)
 	{
-		
+		System.out.println("Dead");
 	}
 	
 	private void enemySetAtGround()
@@ -188,9 +226,47 @@ public class Enemy
 		transform.getRotation().setY(angleCamera+90);
 	}
 	
+	private Vector2f enemyNearestNode()
+	{
+		double min=Double.POSITIVE_INFINITY;
+		Vector2f nearest=null;
+		Vector2f currentPos=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
+		for(int i=0;i<Game.getLevel().nodes.size();i++)
+		{
+			double distance=currentPos.subtract(Game.getLevel().nodes.get(i).pos).length();
+			if(distance<min)
+			{
+				min=distance;
+				nearest=Game.getLevel().nodes.get(i).pos;
+			}
+		}
+		return nearest;
+	}
+	
+	private Vector2f playerNearestNode()
+	{
+		double min=Double.POSITIVE_INFINITY;
+		Vector2f nearest=null;
+		Vector2f currentPos=new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ());
+		for(int i=0;i<Game.getLevel().nodes.size();i++)
+		{
+			double distance=currentPos.subtract(Game.getLevel().nodes.get(i).pos).length();
+			if(distance<min)
+			{
+				min=distance;
+				nearest=Game.getLevel().nodes.get(i).pos;
+			}
+		}
+		return nearest;
+	}
+	
 
 	public void update()
 	{
+			//Vector2f nearestNodeToEnemy=enemyNearestNode();
+			//Vector2f nearestNodeToPlayer=playerNearestNode();
+		
+			//TODO: Node based pathfinding instead of direct movement for enemy
 			Vector3f dirToCamera = Transform.getCamera().getPos().subtract(transform.getTranslation());
 			float distance=dirToCamera.length();
 			Vector3f orientation=dirToCamera.normalizeIntoUnitVector();

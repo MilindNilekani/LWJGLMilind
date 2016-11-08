@@ -18,7 +18,6 @@ public class Player {
 	{
 		float sen=0.5f;
 		
-		
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
 			Input.setCursor(true);
