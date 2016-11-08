@@ -26,19 +26,16 @@ public class Level
 	
 	private Transform transform;
 	
-	private Enemy enemy;
+	private ArrayList<Enemy> enemyList;
 	private Player player;
+	
 	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
 	{
-		player=new Player(new Vector3f(7f,0.4375f,7f));
-		Transform.setCamera(player.getCamera());
-		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
+		enemyList=new ArrayList<Enemy>();
+		
 		collisionStart=new ArrayList<Vector2f>();
 		collisionEnd=new ArrayList<Vector2f>();
-		
-		Transform enemyT=new Transform();
-		enemyT.setTranslation(new Vector3f(12f,0f,12f));
-		enemy=new Enemy(enemyT);
+
 		level=new Bitmap(levelName).flipY();
 		meshWall=new Mesh();
 		meshFloor=new Mesh();
@@ -65,6 +62,48 @@ public class Level
 		generateCeiling(meshCeiling);
 		generateGrafitti(meshGrafitti);
 		generatePictureFrame(meshPictureFrame);
+		generatePlayer();
+		generateEnemies();
+	}
+	
+	private void generateEnemies()
+	{
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+					continue;
+				
+				if(level.getPixel(i, j)==-16776961)
+				{
+					Transform enemyT=new Transform();
+					enemyT.setTranslation(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH));
+					enemyList.add(new Enemy(enemyT));
+				}
+				
+			}
+		}
+	}
+	
+	private void generatePlayer()
+	{
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+					continue;
+				
+				if(level.getPixel(i, j)==-65281)
+				{
+					player=new Player(new Vector3f((i+0.5f)*CUBE_HEIGHT,0.4375f,(j+0.5f)*CUBE_LENGTH));
+					Transform.setCamera(player.getCamera());
+					Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
+				}
+				
+			}
+		}
 	}
 	
 	public void input()
@@ -183,12 +222,15 @@ public class Level
 	public void update()
 	{
 		player.update();
-		enemy.update();
+		for(Enemy enemy:enemyList)
+		{
+			enemy.update();
+		}
 	}
 	
 	public void render()
 	{
-		player.render();
+		
 		
 		shaderWall.bind();
 		shaderWall.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialWall);
@@ -209,8 +251,12 @@ public class Level
 		shaderPictureFrame.bind();
 		shaderPictureFrame.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialPictureFrame);
 		meshPictureFrame.draw();
+		for(Enemy enemy:enemyList)
+		{
+			enemy.render();
+		}
+		player.render();
 		
-		enemy.render();
 	}
 	
 	private void addFace(ArrayList<Integer> indices, int startLocation, boolean direction)
@@ -253,7 +299,7 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==-1)
+				if(level.getPixel(i, j)==-1  || level.getPixel(i, j)==-16776961 || level.getPixel(i, j)==-65281)
 				{
 					if(level.getPixel(i, j-1)==-16711936)
 					{
@@ -337,7 +383,7 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==-1)
+				if(level.getPixel(i, j)==-1 || level.getPixel(i, j)==-16776961 || level.getPixel(i, j)==-65281)
 				{
 					if(level.getPixel(i, j-1)==-65536)
 					{
@@ -420,7 +466,7 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==-1)
+				if(level.getPixel(i, j)==-1 || level.getPixel(i, j)==-16776961 || level.getPixel(i, j)==-65281)
 				{
 					if(level.getPixel(i, j-1)==-16777216)
 					{
@@ -569,7 +615,7 @@ public class Level
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
 				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				
+				//System.out.println(level.getPixel(i, j));
 			}
 		}
 		
