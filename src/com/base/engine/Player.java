@@ -4,7 +4,7 @@ import org.lwjgl.input.Keyboard;
 
 public class Player {
 	
-	public static final float SCALE = 0.0625f;
+	public static final float SCALE = 0.0325f;
 	public static final float SIZEY = SCALE;
 	public static final float SIZEX = (float)((double)SIZEY / (1.0379746835443037974683544303797 * 2.0));
 	public static final float START = 0;
@@ -54,7 +54,7 @@ public class Player {
 	
 	public void input()
 	{
-		float sen=0.5f;
+		float sen=0.2f;
 		
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
@@ -118,7 +118,16 @@ public class Player {
 		Vector3f newPos=oldPos.add(movement.multiply(movAmt));
 		Vector3f collision=Game.getLevel().checkCollision(oldPos, newPos, 0.2f, 0.2f);
 		movement=movement.multiply(collision);
-		camera.move(movement, movAmt);
+		if(movement.length()>0)
+			camera.move(movement, movAmt);
+		
+		transform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f)));
+		transform.getTranslation().setY(transform.getTranslation().getY()-0.0740f);
+		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(transform.getTranslation());
+		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
+		if(dirToCamera.getX() < 0)
+			angleCamera+=180;
+		transform.getRotation().setY(angleCamera+90);
 	}
 	
 	public void render()
