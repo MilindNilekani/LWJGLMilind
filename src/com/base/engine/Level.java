@@ -99,6 +99,7 @@ public class Level
 				deadEnemyList.add(e);
 			}
 		}
+		System.out.println(deadEnemyList.size());
 	}
 	
 	private void generatePlayer()
@@ -184,22 +185,31 @@ public class Level
 			Enemy nearestEnemy=null;
 			for(Enemy e:enemyList)
 			{
-				Vector2f enemySize=new Vector2f(0.2f,0.2f);
-				Vector3f enemyPos3f=e.getTransform().getTranslation();
-				Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
-				Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);
+				if(deadEnemyList.contains(e)==true)
+				{
+					continue;
+				}
+				else
+				{
+					Vector2f enemySize=new Vector2f(0.2f,0.2f);
+					Vector3f enemyPos3f=e.getTransform().getTranslation();
+					Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
+					Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);
 				
-				if(collision!=null && (nearestEnemyIntersect==null || nearestEnemyIntersect.subtract(start).length() > collision.subtract(start).length()))
+					if(collision!=null && (nearestEnemyIntersect==null || nearestEnemyIntersect.subtract(start).length() > collision.subtract(start).length()))
 					nearestEnemyIntersect=collision;
 				
-				if(nearestEnemyIntersect==collision && deadEnemyList.contains(e)==false)
+					//if(nearestEnemyIntersect==collision && deadEnemyList.contains(e)==false)
+					if(nearestEnemyIntersect==collision)
 					nearestEnemy=e;
+				}
 			}
 			if(nearestEnemyIntersect!=null && (nearest==null || nearestEnemyIntersect.subtract(start).length()<nearest.subtract(start).length()))
 			{
+				//if(nearestEnemy!=null && deadEnemyList.contains(nearestEnemy)==false)
 				if(nearestEnemy!=null)
 				{
-					System.out.println("We have hit enemy");
+					//System.out.println("We have hit enemy");
 					nearestEnemy.damage(player.getDamage());
 				}
 			}

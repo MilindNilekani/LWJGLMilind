@@ -49,6 +49,7 @@ public class Enemy
 	private boolean look;
 	private boolean attack;
 	private int health;
+	private boolean addedToDeadList=false;
 	private static ArrayList<Texture> animations;
 
 	public Enemy(Transform transform, int id)
@@ -111,7 +112,7 @@ public class Enemy
 			health=0;
 			state=STATE_DYING;
 		}
-		System.out.println(health);
+		//System.out.println(health);
 	}
 	
 	private void idleUpdate(Vector3f orientation, float distance)
@@ -267,7 +268,11 @@ public class Enemy
 		//System.out.println("Dead");
 		material.setTexture(animations.get(12));
 		transform.setScale(1.7586206896551724137931034482759f,0.28571428571428571428571428571429f,1);
-		Game.getLevel().deleteDeadMonster(id);
+		if(!addedToDeadList)
+		{
+			Game.getLevel().deleteDeadMonster(id);
+			addedToDeadList=true;
+		}
 	}
 	
 	private void enemySetAtGround()
