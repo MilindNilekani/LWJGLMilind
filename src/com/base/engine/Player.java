@@ -1,5 +1,7 @@
 package com.base.engine;
 
+import java.util.Random;
+
 import org.lwjgl.input.Keyboard;
 
 public class Player {
@@ -8,6 +10,8 @@ public class Player {
 	public static final float SIZEY = SCALE;
 	public static final float SIZEX = (float)((double)SIZEY / (1.0379746835443037974683544303797 * 2.0));
 	public static final float START = 0;
+	
+	public static final float SHOOT_DISTANCE=100.0f;
 
 	public static final float OFFSET_X = 0.0f;
 	public static final float OFFSET_Y = 0.0f;
@@ -17,9 +21,13 @@ public class Player {
 	public static final float TEX_MIN_Y = -OFFSET_Y;
 	public static final float TEX_MAX_Y = 1 - OFFSET_Y;
 	
+	public static final int MIN_DAMAGE=20;
+	public static final int MAX_DAMAGE=40;
+
 	public static final int MAX_HEALTH=100;
 	
 	private Camera camera;
+	private Random random;
 	private Mesh mesh;
 	private Transform transform;
 	private Shader shader;
@@ -31,6 +39,7 @@ public class Player {
 	
 	public Player(Vector3f position)
 	{
+		random=new Random();
 		camera=new Camera(position, new Vector3f(0,0,1), new Vector3f(0,1,0));
 		Input.setCursor(false);
 		health=MAX_HEALTH;
@@ -50,6 +59,23 @@ public class Player {
 								  0,2,3};
 
 		mesh.addVertices(vertices, indices);
+	}
+	
+	public void damage(int dmg)
+	{
+		health-=dmg;
+		if(health>MAX_HEALTH)
+			health=MAX_HEALTH;
+		if(health<=0)
+		{
+			System.out.println("You died");
+			Game.setIsRunning(false);
+		}
+	}
+	
+	public int getDamage()
+	{
+		return random.nextInt(MAX_DAMAGE-MIN_DAMAGE)+MIN_DAMAGE;
 	}
 	
 	public void input()
@@ -72,7 +98,11 @@ public class Player {
 			}
 			else
 			{
-				System.out.println("Shoot");
+				Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
+				Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
+				Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
+				
+				Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 			}
 		}
 		

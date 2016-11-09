@@ -24,6 +24,9 @@ public class Enemy
 	public static final int STATE_DYING=3;
 	public static final int STATE_DEAD=4;
 	
+	public static final int MIN_DAMAGE=5;
+	public static final int MAX_DAMAGE=30;
+	
 	public static final float ATTACK_PROB=0.5f;
 	public static final int MAX_HEALTH=100;
 	
@@ -82,14 +85,22 @@ public class Enemy
 			mesh.addVertices(vertices, indices);
 	}
 	
+	public Transform getTransform()
+	{
+		return transform;
+	}
+	
 	public void damage(int dmg)
 	{
 		if(state==STATE_IDLE)
 			state=STATE_CHASE;
 		health-=dmg;
-		System.out.println(health);
 		if(health<=0)
+		{
+			health=0;
 			state=STATE_DYING;
+		}
+		System.out.println(health);
 	}
 	
 	private void idleUpdate(Vector3f orientation, float distance)
@@ -111,13 +122,12 @@ public class Enemy
 				Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ());
 				Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
 				
-				Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
+				Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd, false);
 				
 				Vector2f playerIntersectVector=new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ());
 				
 				if(collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length())
 				{
-					System.out.println("Seen player");
 					state=STATE_CHASE;
 				}
 				
@@ -179,14 +189,13 @@ public class Enemy
 					Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ()).rotate((random.nextFloat()-0.5f)*10.0f);
 					Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
 		
-					Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd);
+					Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd,false);
 		
 					Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
 		
 					if(playerIntersectVector!=null && (collision==null || playerIntersectVector.subtract(lineStart).length()<collision.subtract(lineStart).length()))
 					{
-							System.out.println("Hit player");
-			
+							Game.getLevel().damage(random.nextInt(MAX_DAMAGE-MIN_DAMAGE)+MIN_DAMAGE);			
 					}
 					attack=false;
 			}
@@ -210,7 +219,7 @@ public class Enemy
 	
 	private void deadUpdate(Vector3f orientation, float distance)
 	{
-		System.out.println("Dead");
+		//System.out.println("Dead");
 	}
 	
 	private void enemySetAtGround()

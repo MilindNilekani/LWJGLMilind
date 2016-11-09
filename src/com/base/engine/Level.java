@@ -152,7 +152,7 @@ public class Level
 		return result;
 	}
 	
-	public Vector2f checkCollisionOfBullet(Vector2f start, Vector2f end)
+	public Vector2f checkCollisionOfBullet(Vector2f start, Vector2f end, boolean enemy)
 	{
 		Vector2f nearest=null;
 		for(int i=0;i<collisionStart.size();i++)
@@ -163,8 +163,37 @@ public class Level
 				nearest=collision;
 				
 		}
-		
+		if(enemy)
+		{
+			Vector2f nearestEnemyIntersect=null;
+			Enemy nearestEnemy=null;
+			for(Enemy e:enemyList)
+			{
+				Vector2f enemySize=new Vector2f(0.2f,0.2f);
+				Vector3f enemyPos3f=e.getTransform().getTranslation();
+				Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
+				Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);
+				
+				if(collision!=null && (nearestEnemyIntersect==null || nearestEnemyIntersect.subtract(start).length() > collision.subtract(start).length()))
+					nearestEnemyIntersect=collision;
+				
+				if(nearestEnemyIntersect==collision)
+					nearestEnemy=e;
+			}
+			if(nearestEnemyIntersect!=null && (nearest==null || nearestEnemyIntersect.subtract(start).length()<nearest.subtract(start).length()))
+			{
+				System.out.println("We have hit enemy");
+				if(nearestEnemy!=null)
+					nearestEnemy.damage(player.getDamage());
+			}
+		}
+			
 		return nearest;
+	}
+	
+	public void damage(int dmg)
+	{
+		player.damage(dmg);
 	}
 	
 	public Vector2f lineIntersectRect(Vector2f lineStart, Vector2f lineEnd,Vector2f pos, Vector2f size)
