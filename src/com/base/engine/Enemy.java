@@ -268,7 +268,7 @@ public class Enemy
 		transform.setScale(1.7586206896551724137931034482759f,0.28571428571428571428571428571429f,1);
 		if(!addedToDeadList)
 		{
-			Game.getLevel().deleteDeadMonster(id);
+			Game.getLevel().deleteDeadEnemy(id);
 			addedToDeadList=true;
 		}
 	}

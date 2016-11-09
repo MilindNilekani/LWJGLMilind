@@ -90,7 +90,7 @@ public class Level
 		}
 	}
 	
-	public void deleteDeadMonster(int id)
+	public void deleteDeadEnemy(int id)
 	{
 		for(Enemy e:enemyList)
 		{
