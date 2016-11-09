@@ -65,8 +65,6 @@ public class Shader
 		glUniformMatrix4(uniforms.get(uniformName), true, Util.createFlippedBuffer(value));
 	}
 	
-	
-	
 	public void addVertexShader(String text)
 	{
 		addProgram(text, GL_VERTEX_SHADER);

@@ -6,10 +6,10 @@ import org.lwjgl.input.Keyboard;
 
 public class Player {
 	
-	public static final float SCALE = 0.0325f;
-	public static final float SIZEY = SCALE;
-	public static final float SIZEX = (float)((double)SIZEY / (1.0379746835443037974683544303797 * 2.0));
-	public static final float START = 0;
+	public static final float GUN_SCALE = 0.0325f;
+	public static final float GUN_SIZEY = GUN_SCALE;
+	public static final float GUN_SIZEX = (float)((double)GUN_SIZEY / (1.0379746835443037974683544303797 * 2.0));
+	public static final float GUN_START = 0;
 	
 	public static final float SHOOT_DISTANCE=100.0f;
 
@@ -28,10 +28,10 @@ public class Player {
 	
 	private Camera camera;
 	private Random random;
-	private Mesh mesh;
-	private Transform transform;
-	private Shader shader;
-	private Material material;
+	private Mesh gunMesh;
+	private Transform gunTransform;
+	private Shader gunShader;
+	private Material gunMaterial;
 	private static boolean mouseLocked=true;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
@@ -43,22 +43,24 @@ public class Player {
 		camera=new Camera(position, new Vector3f(0,0,1), new Vector3f(0,1,0));
 		Input.setCursor(false);
 		health=MAX_HEALTH;
-		transform=new Transform();
-		shader=new BasicShader();
-		transform.setTranslation(position);
-		material=new Material(ResourceLoader.loadTexture("PISGB0.png"));
-		mesh=new Mesh();
+		
+		//Gun stuff
+		gunTransform=new Transform();
+		gunShader=new BasicShader();
+		gunTransform.setTranslation(position);
+		gunMaterial=new Material(ResourceLoader.loadTexture("PISGB0.png"));
+		gunMesh=new Mesh();
 
 		
-		Vertex[] vertices = new Vertex[]{new Vertex(new Vector3f(-SIZEX,START,START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
-										 new Vertex(new Vector3f(-SIZEX,SIZEY,START), new Vector2f(TEX_MAX_X,TEX_MIN_Y)),
-										 new Vertex(new Vector3f(SIZEX,SIZEY,START), new Vector2f(TEX_MIN_X,TEX_MIN_Y)),
-										 new Vertex(new Vector3f(SIZEX,START,START), new Vector2f(TEX_MIN_X,TEX_MAX_Y))};
+		Vertex[] vertices = new Vertex[]{new Vertex(new Vector3f(-GUN_SIZEX,GUN_START,GUN_START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
+										 new Vertex(new Vector3f(-GUN_SIZEX,GUN_SIZEY,GUN_START), new Vector2f(TEX_MAX_X,TEX_MIN_Y)),
+										 new Vertex(new Vector3f(GUN_SIZEX,GUN_SIZEY,GUN_START), new Vector2f(TEX_MIN_X,TEX_MIN_Y)),
+										 new Vertex(new Vector3f(GUN_SIZEX,GUN_START,GUN_START), new Vector2f(TEX_MIN_X,TEX_MAX_Y))};
 
 		int[] indices = new int[]{0,1,2,
 								  0,2,3};
 
-		mesh.addVertices(vertices, indices);
+		gunMesh.addVertices(vertices, indices);
 	}
 	
 	public void damage(int dmg)
@@ -110,13 +112,13 @@ public class Player {
 		
 		
 		if(Input.getKey(Keyboard.KEY_W))
-			movement=movement.add(camera.getForward());//camera.move(camera.getForward(), movAmt);
+			movement=movement.add(camera.getForward());
 		if(Input.getKey(Keyboard.KEY_S))
-			movement=movement.subtract(camera.getForward());//camera.move(camera.getForward(), -movAmt);
+			movement=movement.subtract(camera.getForward());
 		if(Input.getKey(Keyboard.KEY_A))
-			movement=movement.add(camera.getLeft());//camera.move(camera.getLeft(), movAmt);
+			movement=movement.add(camera.getLeft());
 		if(Input.getKey(Keyboard.KEY_D))
-			movement=movement.add(camera.getRight());//camera.move(camera.getRight(), movAmt);
+			movement=movement.add(camera.getRight());
 		
 		
 		if(mouseLocked)
@@ -151,20 +153,20 @@ public class Player {
 		if(movement.length()>0)
 			camera.move(movement, movAmt);
 		
-		transform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f)));
-		transform.getTranslation().setY(transform.getTranslation().getY()-0.0740f);
-		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(transform.getTranslation());
+		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f)));
+		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
+		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
 		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
 		if(dirToCamera.getX() < 0)
 			angleCamera+=180;
-		transform.getRotation().setY(angleCamera+90);
+		gunTransform.getRotation().setY(angleCamera+90);
 	}
 	
 	public void render()
 	{
-		shader.bind();
-		shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
-		mesh.draw();
+		gunShader.bind();
+		gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
+		gunMesh.draw();
 	}
 
 	public Camera getCamera() {

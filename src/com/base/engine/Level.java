@@ -199,17 +199,14 @@ public class Level
 					if(collision!=null && (nearestEnemyIntersect==null || nearestEnemyIntersect.subtract(start).length() > collision.subtract(start).length()))
 					nearestEnemyIntersect=collision;
 				
-					//if(nearestEnemyIntersect==collision && deadEnemyList.contains(e)==false)
 					if(nearestEnemyIntersect==collision)
-					nearestEnemy=e;
+						nearestEnemy=e;
 				}
 			}
 			if(nearestEnemyIntersect!=null && (nearest==null || nearestEnemyIntersect.subtract(start).length()<nearest.subtract(start).length()))
 			{
-				//if(nearestEnemy!=null && deadEnemyList.contains(nearestEnemy)==false)
 				if(nearestEnemy!=null)
 				{
-					//System.out.println("We have hit enemy");
 					nearestEnemy.damage(player.getDamage());
 				}
 			}

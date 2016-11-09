@@ -14,6 +14,7 @@ public class Window
 		try 
 		{
 			Display.setDisplayMode(new DisplayMode(width,height));
+            Display.setFullscreen(true);
 			Display.create();
 			Keyboard.create();
 			Mouse.create();

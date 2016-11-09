@@ -2,9 +2,9 @@ package com.base.engine;
 
 public class MainComponent 
 {	
-	public static final int HEIGHT=1200;
-	public static final int WIDTH=900;
-	public static final String TITLE="3D Java Game Engine";
+	public static final int HEIGHT=1440;
+	public static final int WIDTH=2560;
+	public static final String TITLE="Harambe's Revenge";
 	public static final double FRAME_CAP=5000.0;
 	
 	private Game game;
