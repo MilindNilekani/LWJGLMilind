@@ -42,6 +42,7 @@ public class Enemy
 	private Random random;
 	private Transform transform;
 	private Shader shader;
+	private double deathTime;
 	
 	private int state;
 	private boolean look;
@@ -62,7 +63,15 @@ public class Enemy
 			animations.add(ResourceLoader.loadTexture("SSWVE0.png"));
 			animations.add(ResourceLoader.loadTexture("SSWVF0.png"));
 			animations.add(ResourceLoader.loadTexture("SSWVG0.png"));
+			
+			animations.add(ResourceLoader.loadTexture("SSWVH0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVI0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVJ0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVK0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVL0.png"));
+			animations.add(ResourceLoader.loadTexture("SSWVM0.png"));
 		}
+		deathTime=0;
 		look=false;
 		this.state=STATE_IDLE;
 		health=MAX_HEALTH;
@@ -214,12 +223,48 @@ public class Enemy
 	
 	private void dyingUpdate(Vector3f orientation, float distance)
 	{
-		state=STATE_DEAD;
+		double time = ((double)Time.getTime())/((double)Time.SECOND);
+		double timeDecimals = time - (double)((int)time);
+
+		if(deathTime == 0)
+			deathTime = time;
+
+		final float time1 = 0.1f;
+		final float time2 = 0.3f;
+		final float time3 = 0.45f;
+		final float time4 = 0.6f;
+
+		if(time < deathTime + time1)
+		{
+			material.setTexture(animations.get(8));
+			transform.setScale(1,0.96428571428571428571428571428571f,1);
+		}
+		else if(time < deathTime + time2)
+		{
+			material.setTexture(animations.get(9));
+			transform.setScale(1.7f,0.9f,1);
+		}
+		else if(time < deathTime + time3)
+		{
+			material.setTexture(animations.get(10));
+			transform.setScale(1.7f,0.9f,1);
+		}
+		else if(time < deathTime + time4)
+		{
+			material.setTexture(animations.get(11));
+			transform.setScale(1.7f,0.5f,1);
+		}
+		else
+		{
+			state = STATE_DEAD;
+		}
 	}
 	
 	private void deadUpdate(Vector3f orientation, float distance)
 	{
 		//System.out.println("Dead");
+		material.setTexture(animations.get(12));
+		transform.setScale(1.7586206896551724137931034482759f,0.28571428571428571428571428571429f,1);
 	}
 	
 	private void enemySetAtGround()

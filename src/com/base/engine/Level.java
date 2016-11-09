@@ -250,11 +250,12 @@ public class Level
 	
 	public void update()
 	{
-		player.update();
+		
 		for(Enemy enemy:enemyList)
 		{
 			enemy.update();
 		}
+		player.update();
 	}
 	
 	public void render()

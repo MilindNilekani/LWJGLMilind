@@ -32,7 +32,7 @@ public class Player {
 	private Transform transform;
 	private Shader shader;
 	private Material material;
-	boolean mouseLocked=true;
+	private static boolean mouseLocked=true;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
 	private int health;
