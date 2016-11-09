@@ -44,13 +44,14 @@ public class Enemy
 	private Shader shader;
 	private double deathTime;
 	
+	private int id;
 	private int state;
 	private boolean look;
 	private boolean attack;
 	private int health;
 	private static ArrayList<Texture> animations;
 
-	public Enemy(Transform transform)
+	public Enemy(Transform transform, int id)
 	{
 		if(animations==null)
 		{
@@ -71,6 +72,7 @@ public class Enemy
 			animations.add(ResourceLoader.loadTexture("SSWVL0.png"));
 			animations.add(ResourceLoader.loadTexture("SSWVM0.png"));
 		}
+		this.id=id;
 		deathTime=0;
 		look=false;
 		this.state=STATE_IDLE;
@@ -265,6 +267,7 @@ public class Enemy
 		//System.out.println("Dead");
 		material.setTexture(animations.get(12));
 		transform.setScale(1.7586206896551724137931034482759f,0.28571428571428571428571428571429f,1);
+		Game.getLevel().deleteDeadMonster(id);
 	}
 	
 	private void enemySetAtGround()
@@ -352,5 +355,13 @@ public class Enemy
 		shader.bind();
 		shader.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), material);
 		mesh.draw();
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

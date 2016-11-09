@@ -1,6 +1,7 @@
 package com.base.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Level 
 {
@@ -26,13 +27,14 @@ public class Level
 	
 	private Transform transform;
 	
-	private ArrayList<Enemy> enemyList;
+	public ArrayList<Enemy> enemyList;
+	public ArrayList<Enemy> deadEnemyList;
 	private Player player;
 	
 	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
 	{
+		deadEnemyList=new ArrayList<Enemy>();
 		enemyList=new ArrayList<Enemy>();
-		
 		collisionStart=new ArrayList<Vector2f>();
 		collisionEnd=new ArrayList<Vector2f>();
 
@@ -68,6 +70,7 @@ public class Level
 	
 	private void generateEnemies()
 	{
+		int id=0;
 		for(int i=0;i<level.getWidth();i++)
 		{
 			for(int j=0;j<level.getHeight();j++)
@@ -79,9 +82,21 @@ public class Level
 				{
 					Transform enemyT=new Transform();
 					enemyT.setTranslation(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH));
-					enemyList.add(new Enemy(enemyT));
+					enemyList.add(new Enemy(enemyT,id));
+					id++;
 				}
 				
+			}
+		}
+	}
+	
+	public void deleteDeadMonster(int id)
+	{
+		for(Enemy e:enemyList)
+		{
+			if(e.getId()==id)
+			{
+				deadEnemyList.add(e);
 			}
 		}
 	}
@@ -177,14 +192,16 @@ public class Level
 				if(collision!=null && (nearestEnemyIntersect==null || nearestEnemyIntersect.subtract(start).length() > collision.subtract(start).length()))
 					nearestEnemyIntersect=collision;
 				
-				if(nearestEnemyIntersect==collision)
+				if(nearestEnemyIntersect==collision && deadEnemyList.contains(e)==false)
 					nearestEnemy=e;
 			}
 			if(nearestEnemyIntersect!=null && (nearest==null || nearestEnemyIntersect.subtract(start).length()<nearest.subtract(start).length()))
 			{
-				System.out.println("We have hit enemy");
 				if(nearestEnemy!=null)
+				{
+					System.out.println("We have hit enemy");
 					nearestEnemy.damage(player.getDamage());
+				}
 			}
 		}
 			
