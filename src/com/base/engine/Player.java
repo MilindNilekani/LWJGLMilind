@@ -31,6 +31,7 @@ public class Player {
 	public static final int MAX_DAMAGE=40;
 
 	public static final int MAX_HEALTH=100;
+	public static final int MAX_AMMO=10000000;
 	
 	private Camera camera;
 	private Random random;
@@ -42,6 +43,8 @@ public class Player {
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
 	private int health;
+	private int ammo;
+	
 	
 	private static ArrayList<Texture> numbersUI;
 	
@@ -59,6 +62,7 @@ public class Player {
 	
 	public Player(Vector3f position)
 	{
+		ammo=MAX_AMMO;
 		if(numbersUI==null)
 		{
 			numbersUI=new ArrayList<Texture>();
@@ -148,6 +152,13 @@ public class Player {
 		}
 	}
 	
+	public void gainAmmo(int val)
+	{
+		ammo+=val;
+		if(ammo>MAX_AMMO)
+			ammo=MAX_AMMO;
+	}
+	
 	public int getDamage()
 	{
 		return random.nextInt(MAX_DAMAGE-MIN_DAMAGE)+MIN_DAMAGE;
@@ -173,11 +184,15 @@ public class Player {
 			}
 			else
 			{
-				Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
-				Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
-				Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
+				if(ammo>0)
+				{
+					Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
+					Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
+					Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
 				
-				Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
+					Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
+					ammo--;
+				}
 			}
 		}
 		

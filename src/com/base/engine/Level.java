@@ -1,7 +1,6 @@
 package com.base.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Level 
 {
@@ -218,6 +217,11 @@ public class Level
 	public void damage(int dmg)
 	{
 		player.damage(dmg);
+	}
+	
+	public void gainAmmo(int val)
+	{
+		player.gainAmmo(val);
 	}
 	
 	public Vector2f lineIntersectRect(Vector2f lineStart, Vector2f lineEnd,Vector2f pos, Vector2f size)
