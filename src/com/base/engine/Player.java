@@ -27,6 +27,8 @@ public class Player {
 	public static final float TEX_MIN_Y = -OFFSET_Y;
 	public static final float TEX_MAX_Y = 1 - OFFSET_Y;
 	
+	private static final float GUN_FIRE_ANIMATIONTIME = 0.1f;
+	
 	public static final int MIN_DAMAGE=20;
 	public static final int MAX_DAMAGE=40;
 
@@ -38,13 +40,13 @@ public class Player {
 	private Mesh gunMesh;
 	private Transform gunTransform;
 	private Shader gunShader;
-	private Material gunMaterial;
+	private Material gunMaterial, gunFireMaterial;
 	private static boolean mouseLocked=true;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
 	private int health;
 	private int ammo;
-	
+	private double gunFireTime;
 	
 	private static ArrayList<Texture> numbersUI;
 	
@@ -83,7 +85,8 @@ public class Player {
 		camera=new Camera(position, new Vector3f(0,0,1), new Vector3f(0,1,0));
 		Input.setCursor(false);
 		health=MAX_HEALTH;
-		
+		gunFireTime=0;
+		gunFireMaterial = new Material(ResourceLoader.loadTexture("PISFA0.png"));
 		//Gun stuff
 		gunTransform=new Transform();
 		gunShader=new BasicShader();
@@ -186,12 +189,16 @@ public class Player {
 			{
 				if(ammo>0)
 				{
-					Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
-					Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
-					Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
+					if((double)Time.getTime()/Time.SECOND - gunFireTime>GUN_FIRE_ANIMATIONTIME)
+					{
+						Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
+						Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
+						Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
 				
-					Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
-					ammo--;
+						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
+						gunFireTime=(double)Time.getTime()/Time.SECOND;
+						ammo--;
+					}
 				}
 			}
 		}
@@ -227,7 +234,6 @@ public class Player {
 	
 	public void update()
 	{
-		
 		float movAmt=2*(float)(Time.getDelta());
 		movement.setY(0);
 		if(movement.length()>0)
@@ -275,9 +281,19 @@ public class Player {
 	
 	public void render()
 	{
-		gunShader.bind();
-		gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
-		gunMesh.draw();
+		//Gun Sprite stuff
+		if((double)Time.getTime()/Time.SECOND < gunFireTime + GUN_FIRE_ANIMATIONTIME)
+		{
+			gunShader.bind();
+			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunFireMaterial);
+			gunMesh.draw();
+		}
+		else
+		{
+			gunShader.bind();
+			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
+			gunMesh.draw();
+		}
 		
 		healthTensShader.bind();
 		healthTensShader.updateUniforms(healthTensTransform.getTransformation(), healthTensTransform.getProjectedTransformation(), healthTensMaterial);
