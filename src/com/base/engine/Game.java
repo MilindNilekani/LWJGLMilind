@@ -7,7 +7,7 @@ public class Game
 
 	public Game()
 	{
-		level=new Level("levelTest.png","wall.png","floor.png","ceiling.png", "grafitti.png", "poster.png");
+		level=new Level("level1.png","wall.png","floor.png","ceiling.png", "grafitti.png", "poster.png");
 		isRunning=true;
 	}
 	

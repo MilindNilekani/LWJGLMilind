@@ -7,7 +7,7 @@ public class Enemy
 {
 	public static final float SCALE = 0.7f;
 	public static final float SIZEY = SCALE;
-	public static final float SIZEX = (float)((double)SIZEY / (1.9310344827586206896551724137931 * 2.0));
+	public static final float SIZEX = (float)((double)1.4 / (1.9310344827586206896551724137931 * 2.0));
 	public static final float START = 0;
 
 	public static final float OFFSET_X = 0.0f;
@@ -57,21 +57,21 @@ public class Enemy
 		if(animations==null)
 		{
 			animations=new ArrayList<Texture>();
-			animations.add(ResourceLoader.loadTexture("SSWVA1.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVB1.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVC1.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVD1.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 1.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 2.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 3.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 4.png"));
 			
-			animations.add(ResourceLoader.loadTexture("SSWVE0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVF0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVG0.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 5.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 6.png"));
+			animations.add(ResourceLoader.loadTexture("Idle 7.png"));
 			
-			animations.add(ResourceLoader.loadTexture("SSWVH0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVI0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVJ0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVK0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVL0.png"));
-			animations.add(ResourceLoader.loadTexture("SSWVM0.png"));
+			animations.add(ResourceLoader.loadTexture("Fire1.png"));
+			animations.add(ResourceLoader.loadTexture("Fire2.png"));
+			animations.add(ResourceLoader.loadTexture("Fire3.png"));
+			animations.add(ResourceLoader.loadTexture("Fire4.png"));
+			animations.add(ResourceLoader.loadTexture("Fire5.png"));
+			animations.add(ResourceLoader.loadTexture("Fire6.png"));
 		}
 		this.id=id;
 		deathTime=0;
@@ -120,14 +120,34 @@ public class Enemy
 		double time=(double)Time.getTime()/(double)Time.SECOND;
 		double timeDecimals=(double)(time-(int)time);
 		
-		if(timeDecimals<0.5)
+		if(timeDecimals<0.1428571428571429)
+		{
+			material.setTexture(animations.get(0));
+		}
+		else if (timeDecimals<0.2857142857142857)
+		{
+			material.setTexture(animations.get(1));
+		}
+		else if (timeDecimals<0.4285714285714286)
+		{
+			material.setTexture(animations.get(2));
+		}
+		else if (timeDecimals<0.5714285714285714)
+		{
+			material.setTexture(animations.get(3));
+		}
+		else if (timeDecimals<0.7142857142857143)
+		{
+			material.setTexture(animations.get(4));
+		}
+		else if (timeDecimals<0.8571428571428571)
 		{
 			look=true;
-			material.setTexture(animations.get(0));
+			material.setTexture(animations.get(5));
 		}
 		else
 		{
-			material.setTexture(animations.get(1));
+			material.setTexture(animations.get(6));
 			if(look)
 			{
 				Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
@@ -153,14 +173,14 @@ public class Enemy
 	{
 		double time=(double)Time.getTime()/(double)Time.SECOND;
 		double timeDecimals=(double)(time-(int)time);
-		if(timeDecimals < 0.25)
+		/*if(timeDecimals < 0.25)
 			material.setTexture(animations.get(0));
 		else if(timeDecimals < 0.5)
 			material.setTexture(animations.get(1));
 		else if(timeDecimals < 0.75)
 			material.setTexture(animations.get(2));
 		else
-			material.setTexture(animations.get(3));
+			material.setTexture(animations.get(3));*/
 		if(random.nextDouble() < ATTACK_PROB * Time.getDelta())
 			state=STATE_ATTACK;
 		if(distance>STOP_CHASE_DISTANCE)
@@ -184,17 +204,25 @@ public class Enemy
 		double time=(double)Time.getTime()/(double)Time.SECOND;
 		double timeDecimals=(double)(time-(int)time);
 		
-		if(timeDecimals<0.25)
+		if(timeDecimals<0.1666666666666667)
 		{
-			material.setTexture(animations.get(4));
+			material.setTexture(animations.get(7));
+		}
+		else if(timeDecimals<0.3333333333333333)
+		{
+			material.setTexture(animations.get(8));
 		}
 		else if(timeDecimals<0.5)
 		{
-			material.setTexture(animations.get(5));
+			material.setTexture(animations.get(9));
 		}
-		else if(timeDecimals<0.75)
+		else if(timeDecimals<0.6666666666666667)
 		{
-			material.setTexture(animations.get(6));
+			material.setTexture(animations.get(10));
+		}
+		else if(timeDecimals<0.8333333333333333)
+		{
+			material.setTexture(animations.get(11));
 			if(attack)
 			{
 					Vector2f lineStart=new Vector2f(transform.getTranslation().getX(), transform.getTranslation().getZ());
@@ -214,7 +242,7 @@ public class Enemy
 		}
 		else
 		{
-			material.setTexture(animations.get(5));
+			material.setTexture(animations.get(12));
 			if(timeDecimals>0.99f)
 			{
 				state=STATE_CHASE;

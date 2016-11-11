@@ -27,7 +27,7 @@ public class Player {
 	public static final float TEX_MIN_Y = -OFFSET_Y;
 	public static final float TEX_MAX_Y = 1 - OFFSET_Y;
 	
-	private static final float GUN_FIRE_ANIMATIONTIME = 0.1f;
+	private static final float GUN_FIRE_ANIMATIONTIME = 0.2f;
 	
 	public static final int MIN_DAMAGE=20;
 	public static final int MAX_DAMAGE=40;
@@ -41,7 +41,7 @@ public class Player {
 	private Transform gunTransform;
 	private Shader gunShader;
 	private Material gunMaterial, gunFireMaterial;
-	private static boolean mouseLocked=true;
+	private static boolean mouseLocked=false;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
 	private int health;
@@ -198,6 +198,7 @@ public class Player {
 						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
 						ammo--;
+						System.out.println("Shoot");
 					}
 				}
 			}
