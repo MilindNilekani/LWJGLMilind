@@ -1,6 +1,13 @@
 package com.base.engine;
 
 import java.io.BufferedReader;
+import javax.imageio.ImageIO;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 
@@ -10,10 +17,29 @@ import java.nio.ByteBuffer;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-
 public class ResourceLoader 
-{
+{	
+	public static Clip loadAudio(String fileName)
+	{
+		Clip clip = null;
+		
+		try
+		{
+		    AudioInputStream stream = AudioSystem.getAudioInputStream(new File("./res/audio/" + fileName));
+		    clip = (Clip) AudioSystem.getLine(new DataLine.Info(Clip.class, stream.getFormat()));
+		    clip.open(stream);
+
+		    return clip;
+		}
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		    System.exit(1);
+		}
+		
+		return clip;
+	}
+	
 	public static Texture loadTexture(String fileName)
 	{
 		

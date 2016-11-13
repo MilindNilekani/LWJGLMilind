@@ -1,6 +1,8 @@
 package com.base.engine;
 
 import java.util.ArrayList;
+import javax.sound.sampled.Clip;
+
 import java.util.Random;
 
 import org.lwjgl.input.Keyboard;
@@ -47,6 +49,7 @@ public class Player {
 	private int health;
 	private int ammo;
 	private double gunFireTime;
+	private static final Clip GUNSHOT_AUDIO=ResourceLoader.loadAudio("ClockTick2.wav");
 	
 	private static ArrayList<Texture> numbersUI;
 	
@@ -197,8 +200,8 @@ public class Player {
 				
 						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
+						AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
 						ammo--;
-						System.out.println("Shoot");
 					}
 				}
 			}

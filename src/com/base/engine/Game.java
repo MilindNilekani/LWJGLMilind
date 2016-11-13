@@ -1,14 +1,19 @@
 package com.base.engine;
 
+import javax.sound.sampled.Clip;
+
 public class Game 
 {
 	private static Level level;
 	private static boolean isRunning;
+	private static final Clip BACKGROUND_MUSIC=ResourceLoader.loadAudio("d_e1m1.mid");
 
 	public Game()
 	{
 		level=new Level("level1.png","wall.png","floor.png","ceiling.png", "grafitti.png", "poster.png");
 		isRunning=true;
+		AudioUtil.playAudio(BACKGROUND_MUSIC,12);
+		AudioUtil.loopAudio(BACKGROUND_MUSIC);
 	}
 	
 	public void input()
