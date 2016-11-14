@@ -29,7 +29,7 @@ public class Player {
 	public static final float TEX_MIN_Y = -OFFSET_Y;
 	public static final float TEX_MAX_Y = 1 - OFFSET_Y;
 	
-	private static final float GUN_FIRE_ANIMATIONTIME = 0.2f;
+	private static final float GUN_FIRE_ANIMATIONTIME = 0.3f;
 	
 	public static final int MIN_DAMAGE=20;
 	public static final int MAX_DAMAGE=40;
@@ -49,7 +49,7 @@ public class Player {
 	private int health;
 	private int ammo;
 	private double gunFireTime;
-	private static final Clip GUNSHOT_AUDIO=ResourceLoader.loadAudio("ClockTick2.wav");
+	
 	
 	private static ArrayList<Texture> numbersUI;
 	
@@ -172,7 +172,7 @@ public class Player {
 	
 	public void input()
 	{
-		float sen=0.2f;
+		float sen=0.1f;
 		
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
@@ -200,7 +200,7 @@ public class Player {
 				
 						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
-						AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
+						//AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
 						ammo--;
 					}
 				}

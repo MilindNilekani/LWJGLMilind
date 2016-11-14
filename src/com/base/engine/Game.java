@@ -10,7 +10,7 @@ public class Game
 
 	public Game()
 	{
-		level=new Level("level1.png","wall.png","floor.png","ceiling.png", "grafitti.png", "poster.png");
+		level=new Level("level1.png");
 		isRunning=true;
 		AudioUtil.playAudio(BACKGROUND_MUSIC,12);
 		AudioUtil.loopAudio(BACKGROUND_MUSIC);

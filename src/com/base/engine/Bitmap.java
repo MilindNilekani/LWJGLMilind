@@ -21,7 +21,6 @@ public class Bitmap
 			this.pixels=new int[width*height];
 			image.getRGB(0, 0, width, height, pixels, 0, width);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

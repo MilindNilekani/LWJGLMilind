@@ -2,6 +2,8 @@ package com.base.engine;
 
 import java.util.ArrayList;
 
+import javax.sound.sampled.Clip;
+
 public class Level 
 {
 	private static final float CUBE_WIDTH=1;
@@ -15,6 +17,8 @@ public class Level
 	
 	private ArrayList<Vector2f> collisionStart;
 	private ArrayList<Vector2f> collisionEnd;
+	
+	private static final Clip GUNSHOT_AUDIO=ResourceLoader.loadAudio("ClockTick2.wav");
 	
 	
 	public ArrayList<Node> nodes=new ArrayList<Node>();
@@ -30,7 +34,7 @@ public class Level
 	public ArrayList<Enemy> deadEnemyList;
 	private Player player;
 	
-	public Level(String levelName, String textureWallName, String textureFloorName, String textureCeilingName, String textureGrafittiName, String texturePictureFrameName)
+	public Level(String levelName)
 	{
 		deadEnemyList=new ArrayList<Enemy>();
 		enemyList=new ArrayList<Enemy>();
@@ -50,11 +54,11 @@ public class Level
 		shaderGrafitti=new BasicShader();
 		shaderPictureFrame=new BasicShader();
 		
-		materialWall=new Material(ResourceLoader.loadTexture(textureWallName));
-		materialFloor=new Material(ResourceLoader.loadTexture(textureFloorName));
-		materialCeiling=new Material(ResourceLoader.loadTexture(textureCeilingName));
-		materialGrafitti=new Material(ResourceLoader.loadTexture(textureGrafittiName));
-		materialPictureFrame=new Material(ResourceLoader.loadTexture(texturePictureFrameName));
+		materialWall=new Material(ResourceLoader.loadTexture("wall.png"));
+		materialFloor=new Material(ResourceLoader.loadTexture("floor.png"));
+		materialCeiling=new Material(ResourceLoader.loadTexture("ceiling.png"));
+		materialGrafitti=new Material(ResourceLoader.loadTexture("grafitti.png"));
+		materialPictureFrame=new Material(ResourceLoader.loadTexture("poster.png"));
 		
 		transform=new Transform();
 		
@@ -207,6 +211,7 @@ public class Level
 				if(nearestEnemy!=null)
 				{
 					nearestEnemy.damage(player.getDamage());
+					AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
 				}
 			}
 		}
