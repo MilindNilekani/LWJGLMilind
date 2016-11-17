@@ -23,14 +23,6 @@ public class Material
 		this.reflectionIntensity=reflectionIntensity;
 		this.reflection_spreadConeIntensity=reflection_spreadConeIntensity;
 	}
-	
-	/*public Material(Texture texture, float reflectionIntensity, float reflection_spreadConeIntensity)
-	{
-		this.texture=texture;
-		this.color=new Vector3f(1,1,1);
-		this.reflectionIntensity=reflectionIntensity;
-		this.reflection_spreadConeIntensity=reflection_spreadConeIntensity;
-	}*/
 
 	public Texture getTexture() {
 		return texture;

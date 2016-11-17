@@ -51,6 +51,7 @@ public class Player {
 	private double gunFireTime;
 	
 	private UI healthTens, healthUnits, healthHundreds;
+	private UI ammoTens, ammoUnits;
 	
 	public Player(Vector3f position)
 	{
@@ -86,6 +87,9 @@ public class Player {
 		healthUnits=new UI(0.105f, -0.0640f,position);
 		healthTens=new UI(0.113f,-0.0645f,position);
 		healthHundreds=new UI(0.121f,-0.0650f,position);
+		
+		ammoTens=new UI(-0.105f,-0.0645f,position);
+		ammoUnits=new UI(-0.113f,-0.0650f,position);
 		
 	}
 	
@@ -163,7 +167,6 @@ public class Player {
 				
 						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
-						//AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
 						ammo--;
 					}
 				}
@@ -192,8 +195,6 @@ public class Player {
 			
 			if(rotY)
 				camera.rotateY(deltaPos.getX()*sen);
-			//if(rotX)
-			//	camera.rotateX(-deltaPos.getY()*sen);
 			if(rotX || rotY)
 				Input.setMousePosition(new Vector2f(Window.getWidth()/2, Window.getHeight()/2));
 		}
@@ -201,6 +202,7 @@ public class Player {
 	
 	public void update()
 	{
+		//-----------------Collision--------------//
 		float movAmt=2*(float)(Time.getDelta());
 		movement.setY(0);
 		if(movement.length()>0)
@@ -213,7 +215,7 @@ public class Player {
 		if(movement.length()>0)
 			camera.move(movement, movAmt);
 		
-		//Gun stuff
+		//--------------------Gun------------------//
 		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.012f))));
 		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
 		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
@@ -222,6 +224,8 @@ public class Player {
 			angleCamera+=180;
 		gunTransform.getRotation().setY(angleCamera+90);
 		
+		
+		//-----------------Health----------------------//
 		//Health units stuff
 		int healthU=health%10;
 		healthUnits.setValueUI(healthU);
@@ -236,6 +240,17 @@ public class Player {
 		int healthH=health/100;
 		healthHundreds.setValueUI(healthH);
 		healthHundreds.update();
+		
+		//----------------Ammo--------------------//
+		//Ammo tens stuff
+		int ammoT=ammo/10;
+		ammoTens.setValueUI(ammoT);
+		ammoTens.update();
+				
+		//Ammo Units
+		int ammoU=ammo%10;
+		ammoUnits.setValueUI(ammoU);
+		ammoUnits.update();
 	}
 	
 	public void render()
@@ -254,10 +269,14 @@ public class Player {
 			gunMesh.draw();
 		}
 		
+		//Health stuff
 		if(health>99)
 			healthHundreds.render();
 		healthTens.render();
 		healthUnits.render();
+		
+		ammoUnits.render();
+		ammoTens.render();
 	}
 
 	public Camera getCamera() {
