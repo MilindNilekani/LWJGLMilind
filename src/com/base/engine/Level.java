@@ -376,6 +376,11 @@ public class Level
 		for(Banana banana:bananas)
 			banana.render();
 		for(Enemy enemy:enemyList)
+		{
+			if(!deadEnemyList.contains(enemy))
+				enemy.render();
+		}
+		for(Enemy enemy:deadEnemyList)
 			enemy.render();
 		for(Ammo a:ammo)
 			a.render();
