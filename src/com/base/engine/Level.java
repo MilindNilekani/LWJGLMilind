@@ -23,6 +23,9 @@ public class Level
 	private ArrayList<Banana> bananas;
 	private ArrayList<Banana> bananasEaten;
 	
+	private ArrayList<Ammo> ammo;
+	private ArrayList<Ammo> ammoCollected;
+	
 	public ArrayList<Node> nodes=new ArrayList<Node>();
 	public class Node
 	{
@@ -38,6 +41,9 @@ public class Level
 	
 	public Level(String levelName)
 	{
+		ammo=new ArrayList<Ammo>();
+		ammoCollected=new ArrayList<Ammo>();
+		
 		bananas=new ArrayList<Banana>();
 		bananasEaten=new ArrayList<Banana>();
 		
@@ -75,6 +81,7 @@ public class Level
 		generatePlayer();
 		generateEnemies();
 		generateBananas();
+		generateAmmo();
 	}
 	
 	
@@ -117,6 +124,24 @@ public class Level
 				if(level.getPixel(i, j)==-256)
 				{
 					bananas.add(new Banana(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
+				}
+				
+			}
+		}
+	}
+	
+	private void generateAmmo()
+	{
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+					continue;
+				
+				if(level.getPixel(i, j)==-16711681)
+				{
+					ammo.add(new Ammo(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
 				}
 				
 			}
@@ -320,6 +345,10 @@ public class Level
 			banana.update();
 		for(Banana b:bananasEaten)
 			bananas.remove(b);
+		for(Ammo a:ammo)
+			a.update();
+		for(Ammo aC:ammoCollected)
+			ammo.remove(aC);
 		player.update();
 	}
 	
@@ -348,6 +377,8 @@ public class Level
 			banana.render();
 		for(Enemy enemy:enemyList)
 			enemy.render();
+		for(Ammo a:ammo)
+			a.render();
 		player.render();
 		
 	}
@@ -647,7 +678,6 @@ public class Level
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
 				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				System.out.println(level.getPixel(i, j));
 				//TODO: Pathfinding
 				/*Node n=new Node();
 				n.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j+0.5f)*CUBE_LENGTH);
@@ -725,6 +755,11 @@ public class Level
 	public void removeBananaOnConsumed(Banana b)
 	{
 		bananasEaten.add(b);
+	}
+	
+	public void removeAmmoOnCollected(Ammo a)
+	{
+		ammoCollected.add(a);
 	}
 
 }

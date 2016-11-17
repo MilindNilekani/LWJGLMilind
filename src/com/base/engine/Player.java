@@ -35,7 +35,7 @@ public class Player {
 	public static final int MAX_DAMAGE=40;
 
 	public static final int MAX_HEALTH=100;
-	public static final int MAX_AMMO=10000000;
+	public static final int MAX_AMMO=50;
 	
 	private Camera camera;
 	private Random random;
@@ -97,7 +97,6 @@ public class Player {
 		gunMaterial=new Material(ResourceLoader.loadTexture("PISGB0.png"));
 		gunMesh=new Mesh();
 
-		
 		Vertex[] vertices = new Vertex[]{new Vertex(new Vector3f(-GUN_SIZEX,GUN_START,GUN_START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
 										 new Vertex(new Vector3f(-GUN_SIZEX,GUN_SIZEY,GUN_START), new Vector2f(TEX_MAX_X,TEX_MIN_Y)),
 										 new Vertex(new Vector3f(GUN_SIZEX,GUN_SIZEY,GUN_START), new Vector2f(TEX_MIN_X,TEX_MIN_Y)),
@@ -165,6 +164,16 @@ public class Player {
 	public int getMaxHealth()
 	{
 		return MAX_HEALTH;
+	}
+	
+	public int getAmmo()
+	{
+		return ammo;
+	}
+	
+	public int getMaxAmmo()
+	{
+		return MAX_AMMO;
 	}
 	public void gainAmmo(int val)
 	{
@@ -260,7 +269,7 @@ public class Player {
 			camera.move(movement, movAmt);
 		
 		//Gun stuff
-		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.01f))));
+		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.012f))));
 		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
 		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
 		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
