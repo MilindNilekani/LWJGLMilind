@@ -50,46 +50,22 @@ public class Player {
 	private int ammo;
 	private double gunFireTime;
 	
-	
-	private static ArrayList<Texture> numbersUI;
-	
-	//Health units digit
-	private Mesh healthUnitsMesh;
-	private Transform healthUnitsTransform;
-	private Shader healthUnitsShader;
-	private Material healthUnitsMaterial;
-	
-	//Health tens digit
-		private Mesh healthTensMesh;
-		private Transform healthTensTransform;
-		private Shader healthTensShader;
-		private Material healthTensMaterial;
+	private UI healthTens, healthUnits, healthHundreds;
 	
 	public Player(Vector3f position)
 	{
+		//Initiliaze player values
 		ammo=MAX_AMMO;
-		if(numbersUI==null)
-		{
-			numbersUI=new ArrayList<Texture>();
-			numbersUI.add(ResourceLoader.loadTexture("0.png"));
-			numbersUI.add(ResourceLoader.loadTexture("1.png"));
-			numbersUI.add(ResourceLoader.loadTexture("2.png"));
-			numbersUI.add(ResourceLoader.loadTexture("3.png"));
-			
-			numbersUI.add(ResourceLoader.loadTexture("4.png"));
-			numbersUI.add(ResourceLoader.loadTexture("5.png"));
-			numbersUI.add(ResourceLoader.loadTexture("6.png"));
-			
-			numbersUI.add(ResourceLoader.loadTexture("7.png"));
-			numbersUI.add(ResourceLoader.loadTexture("8.png"));
-			numbersUI.add(ResourceLoader.loadTexture("9.png"));
-		}
+		health=MAX_HEALTH;
+		
+		//Initialize objects for classes
 		random=new Random();
 		camera=new Camera(position, new Vector3f(0,0,1), new Vector3f(0,1,0));
 		Input.setCursor(false);
-		health=MAX_HEALTH;
+
 		gunFireTime=0;
 		gunFireMaterial = new Material(ResourceLoader.loadTexture("PISFA0.png"));
+		
 		//Gun stuff
 		gunTransform=new Transform();
 		gunShader=new BasicShader();
@@ -107,40 +83,10 @@ public class Player {
 
 		gunMesh.addVertices(vertices, indices);
 		
-		//Health Units
-		healthUnitsTransform=new Transform();
-		healthUnitsShader=new BasicShader();
-		healthUnitsTransform.setTranslation(position);
-		healthUnitsMaterial=new Material(numbersUI.get(0));
-		healthUnitsMesh=new Mesh();
-
+		healthUnits=new UI(0.105f, -0.0640f,position);
+		healthTens=new UI(0.113f,-0.0645f,position);
+		healthHundreds=new UI(0.121f,-0.0650f,position);
 		
-		vertices = new Vertex[]{new Vertex(new Vector3f(-UI_SIZEX,UI_START,UI_START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
-										 new Vertex(new Vector3f(-UI_SIZEX,UI_SIZEY,UI_START), new Vector2f(TEX_MAX_X,TEX_MIN_Y)),
-										 new Vertex(new Vector3f(UI_SIZEX,UI_SIZEY,UI_START), new Vector2f(TEX_MIN_X,TEX_MIN_Y)),
-										 new Vertex(new Vector3f(UI_SIZEX,UI_START,UI_START), new Vector2f(TEX_MIN_X,TEX_MAX_Y))};
-
-		indices = new int[]{0,1,2,
-								  0,2,3};
-
-		healthUnitsMesh.addVertices(vertices, indices);
-		
-		//Health Tens
-				healthTensTransform=new Transform();
-				healthTensShader=new BasicShader();
-				healthTensTransform.setTranslation(position);
-				healthTensMaterial=new Material(numbersUI.get(0));
-				healthTensMesh=new Mesh();
-				
-				vertices = new Vertex[]{new Vertex(new Vector3f(-UI_SIZEX,UI_START,UI_START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
-												 new Vertex(new Vector3f(-UI_SIZEX,UI_SIZEY,UI_START), new Vector2f(TEX_MAX_X,TEX_MIN_Y)),
-												 new Vertex(new Vector3f(UI_SIZEX,UI_SIZEY,UI_START), new Vector2f(TEX_MIN_X,TEX_MIN_Y)),
-												 new Vertex(new Vector3f(UI_SIZEX,UI_START,UI_START), new Vector2f(TEX_MIN_X,TEX_MAX_Y))};
-
-				indices = new int[]{0,1,2,
-										  0,2,3};
-
-				healthTensMesh.addVertices(vertices, indices);
 	}
 	
 	public void damage(int dmg)
@@ -260,7 +206,6 @@ public class Player {
 		if(movement.length()>0)
 			movement=movement.normalizeIntoUnitVector();
 		
-		
 		Vector3f oldPos=camera.getPos();
 		Vector3f newPos=oldPos.add(movement.multiply(movAmt));
 		Vector3f collision=Game.getLevel().checkCollision(oldPos, newPos, 0.2f, 0.2f);
@@ -278,26 +223,19 @@ public class Player {
 		gunTransform.getRotation().setY(angleCamera+90);
 		
 		//Health units stuff
-		int healthUnits=health%10;
-		healthUnitsMaterial.setTexture(numbersUI.get(healthUnits));
-		healthUnitsTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.105f))));
-		healthUnitsTransform.getTranslation().setY(healthUnitsTransform.getTranslation().getY()-0.0640f);
-		dirToCamera = Transform.getCamera().getPos().subtract(healthUnitsTransform.getTranslation());
-		angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
-		if(dirToCamera.getX() < 0)
-			angleCamera+=180;
-		healthUnitsTransform.getRotation().setY(angleCamera+90);
+		int healthU=health%10;
+		healthUnits.setValueUI(healthU);
+		healthUnits.update();
 		
 		//Health tens stuff
-		int healthTens=(health/10)%10;
-		healthTensMaterial.setTexture(numbersUI.get(healthTens));
-		healthTensTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.113f))));
-		healthTensTransform.getTranslation().setY(healthTensTransform.getTranslation().getY()-0.0645f);
-		dirToCamera = Transform.getCamera().getPos().subtract(healthTensTransform.getTranslation());
-		angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
-		if(dirToCamera.getX() < 0)
-			angleCamera+=180;
-		healthTensTransform.getRotation().setY(angleCamera+90);
+		int healthT=(health/10)%10;
+		healthTens.setValueUI(healthT);
+		healthTens.update();
+		
+		//Health Hundreds
+		int healthH=health/100;
+		healthHundreds.setValueUI(healthH);
+		healthHundreds.update();
 	}
 	
 	public void render()
@@ -316,13 +254,10 @@ public class Player {
 			gunMesh.draw();
 		}
 		
-		healthTensShader.bind();
-		healthTensShader.updateUniforms(healthTensTransform.getTransformation(), healthTensTransform.getProjectedTransformation(), healthTensMaterial);
-		healthTensMesh.draw();
-		
-		healthUnitsShader.bind();
-		healthUnitsShader.updateUniforms(healthUnitsTransform.getTransformation(), healthUnitsTransform.getProjectedTransformation(), healthUnitsMaterial);
-		healthUnitsMesh.draw();
+		if(health>99)
+			healthHundreds.render();
+		healthTens.render();
+		healthUnits.render();
 	}
 
 	public Camera getCamera() {
