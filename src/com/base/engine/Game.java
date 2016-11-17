@@ -12,7 +12,7 @@ public class Game
 	{
 		level=new Level("level1.png");
 		isRunning=true;
-		AudioUtil.playAudio(BACKGROUND_MUSIC,12);
+		AudioUtil.playAudio(BACKGROUND_MUSIC,10);
 		AudioUtil.loopAudio(BACKGROUND_MUSIC);
 	}
 	
@@ -25,6 +25,8 @@ public class Game
 	{
 		if(isRunning)
 			level.update();
+		else
+			AudioUtil.stopAudio(BACKGROUND_MUSIC);
 	}
 	
 	public void render()

@@ -132,7 +132,6 @@ public class Player {
 				healthTensTransform.setTranslation(position);
 				healthTensMaterial=new Material(numbersUI.get(0));
 				healthTensMesh=new Mesh();
-
 				
 				vertices = new Vertex[]{new Vertex(new Vector3f(-UI_SIZEX,UI_START,UI_START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
 												 new Vertex(new Vector3f(-UI_SIZEX,UI_SIZEY,UI_START), new Vector2f(TEX_MAX_X,TEX_MIN_Y)),
@@ -158,6 +157,15 @@ public class Player {
 		}
 	}
 	
+	public int getHealth()
+	{
+		return health;
+	}
+	
+	public int getMaxHealth()
+	{
+		return MAX_HEALTH;
+	}
 	public void gainAmmo(int val)
 	{
 		ammo+=val;
@@ -306,8 +314,6 @@ public class Player {
 		healthUnitsShader.bind();
 		healthUnitsShader.updateUniforms(healthUnitsTransform.getTransformation(), healthUnitsTransform.getProjectedTransformation(), healthUnitsMaterial);
 		healthUnitsMesh.draw();
-		
-		
 	}
 
 	public Camera getCamera() {

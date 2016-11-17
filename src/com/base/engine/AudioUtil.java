@@ -5,7 +5,7 @@ import javax.sound.sampled.FloatControl;
 
 public class AudioUtil
 {
-	private static final float AUDIO_VOLUME = -0.5f;
+	private static final float AUDIO_VOLUME = -5.0f;
 	private static final float DECAY_FACTOR = 0.12f;
 	
 	public static void playAudio(Clip clip, float distance)
@@ -29,5 +29,10 @@ public class AudioUtil
 	public static void loopAudio(Clip clip)
 	{
 		clip.loop(Clip.LOOP_CONTINUOUSLY);
+	}
+	
+	public static void stopAudio(Clip clip)
+	{
+		clip.stop();
 	}
 }

@@ -20,6 +20,8 @@ public class Level
 	
 	private static final Clip GUNSHOT_AUDIO=ResourceLoader.loadAudio("ClockTick2.wav");
 	
+	private ArrayList<Banana> bananas;
+	private ArrayList<Banana> bananasEaten;
 	
 	public ArrayList<Node> nodes=new ArrayList<Node>();
 	public class Node
@@ -36,6 +38,9 @@ public class Level
 	
 	public Level(String levelName)
 	{
+		bananas=new ArrayList<Banana>();
+		bananasEaten=new ArrayList<Banana>();
+		
 		deadEnemyList=new ArrayList<Enemy>();
 		enemyList=new ArrayList<Enemy>();
 		collisionStart=new ArrayList<Vector2f>();
@@ -69,6 +74,13 @@ public class Level
 		generatePictureFrame(meshPictureFrame);
 		generatePlayer();
 		generateEnemies();
+		generateBananas();
+	}
+	
+	
+	public Player getPlayer()
+	{
+		return player;
 	}
 	
 	private void generateEnemies()
@@ -87,6 +99,24 @@ public class Level
 					enemyT.setTranslation(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH));
 					enemyList.add(new Enemy(enemyT,id));
 					id++;
+				}
+				
+			}
+		}
+	}
+	
+	private void generateBananas()
+	{
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+					continue;
+				
+				if(level.getPixel(i, j)==-256)
+				{
+					bananas.add(new Banana(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
 				}
 				
 			}
@@ -285,16 +315,16 @@ public class Level
 	{
 		
 		for(Enemy enemy:enemyList)
-		{
 			enemy.update();
-		}
+		for(Banana banana:bananas)
+			banana.update();
+		for(Banana b:bananasEaten)
+			bananas.remove(b);
 		player.update();
 	}
 	
 	public void render()
-	{
-		
-		
+	{	
 		shaderWall.bind();
 		shaderWall.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialWall);
 		meshWall.draw();
@@ -314,10 +344,10 @@ public class Level
 		shaderPictureFrame.bind();
 		shaderPictureFrame.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialPictureFrame);
 		meshPictureFrame.draw();
+		for(Banana banana:bananas)
+			banana.render();
 		for(Enemy enemy:enemyList)
-		{
 			enemy.render();
-		}
 		player.render();
 		
 	}
@@ -617,7 +647,9 @@ public class Level
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
 				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-				Node n=new Node();
+				System.out.println(level.getPixel(i, j));
+				//TODO: Pathfinding
+				/*Node n=new Node();
 				n.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j+0.5f)*CUBE_LENGTH);
 				if(level.getPixel(i-1, j)==-1)
 				{
@@ -643,7 +675,7 @@ public class Level
 					down.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j+1.5f)*CUBE_LENGTH);
 					n.neighbours.add(down);
 				}
-				nodes.add(n);
+				nodes.add(n);*/
 			}
 		}
 		
@@ -690,5 +722,9 @@ public class Level
 		m.addVertices(verticesArray, Util.toIntArray(indicesArray));
 	}
 	
+	public void removeBananaOnConsumed(Banana b)
+	{
+		bananasEaten.add(b);
+	}
 
 }

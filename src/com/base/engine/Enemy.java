@@ -314,7 +314,7 @@ public class Enemy
 		transform.getRotation().setY(angleCamera+90);
 	}
 	
-	private Vector2f enemyNearestNode()
+	/*private Vector2f enemyNearestNode()
 	{
 		double min=Double.POSITIVE_INFINITY;
 		Vector2f nearest=null;
@@ -346,7 +346,7 @@ public class Enemy
 			}
 		}
 		return nearest;
-	}
+	}*/
 	
 
 	public void update()
