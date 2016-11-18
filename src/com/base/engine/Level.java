@@ -4,16 +4,38 @@ import java.util.ArrayList;
 
 import javax.sound.sampled.Clip;
 
+
+//Color codes:
+/*
+
+Player=-65281
+Enemies=-16776961
+Ammo=-16711681
+Bananas=-256
+Black=-16777216
+White=-1
+
+*/
 public class Level 
 {
 	private static final float CUBE_WIDTH=1;
 	private static final float CUBE_HEIGHT=1;
 	private static final float CUBE_LENGTH=1;
 	
+	private static final int BLACK=-16777216;
+	private static final int WHITE=-1;
+	private static final int PLAYER=-65281;
+	private static final int AMMO=-16711681;
+	private static final int BANANAS=-256;
+	private static final int ENEMIES=-16776961;
+	private static final int GRAFITTI=-65536;
+	private static final int PICTURE_FRAME=-16711936;
+	private static final int EXIT_POINT=-16733696;
+	
 	private Bitmap level;
-	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti, meshPictureFrame;
-	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti, shaderPictureFrame;
-	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame;
+	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti, meshPictureFrame, meshExitPoint;
+	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti, shaderPictureFrame, shaderExitPoint;
+	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame, materialExitPoint;
 	
 	private ArrayList<Vector2f> collisionStart;
 	private ArrayList<Vector2f> collisionEnd;
@@ -25,6 +47,8 @@ public class Level
 	
 	private ArrayList<Ammo> ammo;
 	private ArrayList<Ammo> ammoCollected;
+	
+	private ArrayList<Vector3f> exitPoints;
 	
 	public ArrayList<Node> nodes=new ArrayList<Node>();
 	public class Node
@@ -41,6 +65,7 @@ public class Level
 	
 	public Level(String levelName)
 	{
+		exitPoints=new ArrayList<Vector3f>();
 		ammo=new ArrayList<Ammo>();
 		ammoCollected=new ArrayList<Ammo>();
 		
@@ -58,18 +83,21 @@ public class Level
 		meshCeiling=new Mesh();
 		meshGrafitti=new Mesh();
 		meshPictureFrame=new Mesh();
+		meshExitPoint=new Mesh();
 		
 		shaderWall=new BasicShader();
 		shaderFloor=new BasicShader();
 		shaderCeiling=new BasicShader();
 		shaderGrafitti=new BasicShader();
 		shaderPictureFrame=new BasicShader();
+		shaderExitPoint=new BasicShader();
 		
 		materialWall=new Material(ResourceLoader.loadTexture("wall.png"));
 		materialFloor=new Material(ResourceLoader.loadTexture("floor.png"));
 		materialCeiling=new Material(ResourceLoader.loadTexture("ceiling.png"));
 		materialGrafitti=new Material(ResourceLoader.loadTexture("grafitti.png"));
 		materialPictureFrame=new Material(ResourceLoader.loadTexture("poster.png"));
+		materialExitPoint=new Material(ResourceLoader.loadTexture("door.jpg"));
 		
 		transform=new Transform();
 		
@@ -82,8 +110,8 @@ public class Level
 		generateEnemies();
 		generateBananas();
 		generateAmmo();
+		generateExitPoints(meshExitPoint);
 	}
-	
 	
 	public Player getPlayer()
 	{
@@ -97,10 +125,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
-					continue;
-				
-				if(level.getPixel(i, j)==-16776961)
+				if(level.getPixel(i, j)==ENEMIES)
 				{
 					Transform enemyT=new Transform();
 					enemyT.setTranslation(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH));
@@ -118,15 +143,21 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
-					continue;
-				
-				if(level.getPixel(i, j)==-256)
+				if(level.getPixel(i, j)==BANANAS)
 				{
 					bananas.add(new Banana(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
 				}
 				
 			}
+		}
+	}
+	
+	public void openDoors(Vector3f position)
+	{
+		for(Vector3f e:exitPoints)
+		{
+			if(e.subtract(position).length()<1.0f)
+				Game.setIsRunning(false);
 		}
 	}
 	
@@ -136,10 +167,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
-					continue;
-				
-				if(level.getPixel(i, j)==-16711681)
+				if(level.getPixel(i, j)==AMMO)
 				{
 					ammo.add(new Ammo(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
 				}
@@ -166,10 +194,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
-					continue;
-				
-				if(level.getPixel(i, j)==-65281)
+				if(level.getPixel(i, j)==PLAYER)
 				{
 					player=new Player(new Vector3f((i+0.5f)*CUBE_HEIGHT,0.4375f,(j+0.5f)*CUBE_LENGTH));
 					Transform.setCamera(player.getCamera());
@@ -200,7 +225,7 @@ public class Level
 			
 			for(int i = 0; i < level.getWidth(); i++)
 				for(int j = 0; j < level.getHeight(); j++)
-					if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+					if(level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==BLACK || level.getPixel(i, j)==EXIT_POINT)
 						collisionVector = collisionVector.multiply(AABB(oldPos2, newPos2, objectSize, blockSize.multiply(new Vector2f(i,j)), blockSize));
 		}
 		
@@ -373,6 +398,11 @@ public class Level
 		shaderPictureFrame.bind();
 		shaderPictureFrame.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialPictureFrame);
 		meshPictureFrame.draw();
+		
+		shaderExitPoint.bind();
+		shaderExitPoint.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialExitPoint);
+		meshExitPoint.draw();
+		
 		for(Banana banana:bananas)
 			banana.render();
 		for(Enemy enemy:enemyList)
@@ -419,7 +449,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==EXIT_POINT)
 					continue;
 				
 				float xHigh=1;
@@ -428,9 +458,9 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==-1  || level.getPixel(i, j)==-16776961 || level.getPixel(i, j)==-65281)
+				if(level.getPixel(i, j)==WHITE  || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
 				{
-					if(level.getPixel(i, j-1)==-16711936)
+					if(level.getPixel(i, j-1)==PICTURE_FRAME)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
@@ -442,7 +472,7 @@ public class Level
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 					}
 					
-					if(level.getPixel(i, j+1)==-16711936)
+					if(level.getPixel(i, j+1)==PICTURE_FRAME)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
@@ -455,7 +485,7 @@ public class Level
 					}
 					
 				
-					if(level.getPixel(i-1, j)==-16711936)
+					if(level.getPixel(i-1, j)==PICTURE_FRAME)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
@@ -468,7 +498,7 @@ public class Level
 					}	
 					
 					
-					if(level.getPixel(i+1, j)==-16711936)
+					if(level.getPixel(i+1, j)==PICTURE_FRAME)
 					{
 						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
@@ -503,7 +533,7 @@ public class Level
 			for(int j=0;j<level.getHeight();j++)
 			{
 				
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
 					continue;
 				
 				float xHigh=1;
@@ -512,9 +542,9 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==-1 || level.getPixel(i, j)==-16776961 || level.getPixel(i, j)==-65281)
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
 				{
-					if(level.getPixel(i, j-1)==-65536)
+					if(level.getPixel(i, j-1)==GRAFITTI)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
@@ -526,7 +556,7 @@ public class Level
 						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
 					}
 					
-					if(level.getPixel(i, j+1)==-65536)
+					if(level.getPixel(i, j+1)==GRAFITTI)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
@@ -539,7 +569,7 @@ public class Level
 					}
 					
 				
-					if(level.getPixel(i-1, j)==-65536)
+					if(level.getPixel(i-1, j)==GRAFITTI)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
@@ -552,7 +582,7 @@ public class Level
 					}	
 					
 					
-					if(level.getPixel(i+1, j)==-65536)
+					if(level.getPixel(i+1, j)==GRAFITTI)
 					{
 						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
@@ -562,6 +592,92 @@ public class Level
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
 						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+				}
+			}
+		}
+		
+		Vertex[] verticesArray=new Vertex[vertices.size()];
+		Integer[] indicesArray=new Integer[indices.size()];
+		
+		vertices.toArray(verticesArray);
+		indices.toArray(indicesArray);
+		m.addVertices(verticesArray, Util.toIntArray(indicesArray));	
+	}
+	
+	private void generateExitPoints(Mesh m)
+	{
+		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
+		ArrayList<Integer> indices=new ArrayList<Integer>();
+
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
+					continue;
+				
+				float xHigh=1;
+				float xLow=0;
+				float yHigh=1;
+				float yLow=0;
+				
+				//Wall
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
+				{
+					if(level.getPixel(i, j-1)==EXIT_POINT)
+					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						addFace(indices, vertices.size(), false);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						exitPoints.add(new Vector3f((i + 0.5f) * CUBE_WIDTH, 0, (j + 0.5f) * CUBE_LENGTH));
+					}
+					
+					if(level.getPixel(i, j+1)==EXIT_POINT)
+					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						addFace(indices, vertices.size(), true);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						exitPoints.add(new Vector3f((i + 0.5f) * CUBE_WIDTH, 0, (j + 0.5f) * CUBE_LENGTH));
+					}
+					
+				
+					if(level.getPixel(i-1, j)==EXIT_POINT)
+					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						addFace(indices, vertices.size(), true);
+						
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						exitPoints.add(new Vector3f((i + 0.5f) * CUBE_WIDTH, 0, (j + 0.5f) * CUBE_LENGTH));
+					}	
+					
+					
+					if(level.getPixel(i+1, j)==EXIT_POINT)
+					{
+						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						addFace(indices, vertices.size(), false);
+						
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						exitPoints.add(new Vector3f((i + 0.5f) * CUBE_WIDTH, 0, (j + 0.5f) * CUBE_LENGTH));
 					}
 					
 				}
@@ -586,65 +702,59 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
 					continue;
-				
-				float xHigh=1;
-				float xLow=0;
-				float yHigh=1;
-				float yLow=0;
-				
 				//Wall
-				if(level.getPixel(i, j)==-1 || level.getPixel(i, j)==-16776961 || level.getPixel(i, j)==-65281)
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER  || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
 				{
-					if(level.getPixel(i, j-1)==-16777216)
+					if(level.getPixel(i, j-1)==BLACK)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(1,1)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(0,1)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(0,0)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(1,0)));
 					}
 					
-					if(level.getPixel(i, j+1)==-16777216)
+					if(level.getPixel(i, j+1)==BLACK)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(0,1)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(1,1)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(1,0)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(0,0)));
 					}
 					
 				
-					if(level.getPixel(i-1, j)==-16777216)
+					if(level.getPixel(i-1, j)==BLACK)
 					{
 						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), true);
 						
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(0,1)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(1,1)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(1,0)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(0,0)));
 					}	
 					
 					
-					if(level.getPixel(i+1, j)==-16777216)
+					if(level.getPixel(i+1, j)==BLACK)
 					{
 						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
 						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
 						addFace(indices, vertices.size(), false);
 						
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(1,1)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(0,1)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(0,0)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(1,0)));
 					}
 					
 				}
@@ -668,21 +778,16 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+				if(level.getPixel(i, j)==BLACK)
 					continue;
-
-				float xHigh=1;
-				float xLow=0;
-				float yHigh=1;
-				float yLow=0;
 				
 				//Floor
 				addFace(indices, vertices.size(), true);
 				
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(0,0)));
+				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(1,0)));
+				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(1,1)));
+				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(0,1)));
 				//TODO: Pathfinding
 				/*Node n=new Node();
 				n.pos=new Vector2f((i+0.5f)*CUBE_WIDTH, (j+0.5f)*CUBE_LENGTH);
@@ -731,20 +836,16 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==-16777216 || level.getPixel(i, j)==-65536 || level.getPixel(i, j)==-16711936)
+				//System.out.println(level.getPixel(i, j));
+				if(level.getPixel(i, j)==BLACK)
 					continue;
-				
-				float xHigh=1;
-				float xLow=0;
-				float yHigh=1;
-				float yLow=0;
 				
 				addFace(indices, vertices.size(), false);
 				
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
-				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
-				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(0,0)));
+				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(1,0)));
+				vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(1,1)));
+				vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(0,1)));
 			}
 		}
 		

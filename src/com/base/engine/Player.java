@@ -141,6 +141,11 @@ public class Player {
 	{
 		float sen=0.1f;
 		
+		if(Input.getKeyDown(Keyboard.KEY_E))
+		{
+			//Open exit door
+			Game.getLevel().openDoors(camera.getPos());
+		}
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
 			Input.setCursor(true);
@@ -275,6 +280,7 @@ public class Player {
 		healthTens.render();
 		healthUnits.render();
 		
+		//Ammo stuff
 		ammoUnits.render();
 		ammoTens.render();
 	}
