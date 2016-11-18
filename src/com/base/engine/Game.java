@@ -10,7 +10,7 @@ public class Game
 	private static int levelNum=0;
 	private static final int NUMBERLEVELS=2;
 
-	public Game() throws InterruptedException
+	public Game()
 	{
 		loadNextLevel();
 	}
