@@ -157,7 +157,10 @@ public class Level
 		for(Vector3f e:exitPoints)
 		{
 			if(e.subtract(position).length()<1.0f)
+			{
 				Game.setIsRunning(false);
+				Game.loadNextLevel();
+			}
 		}
 	}
 	
@@ -197,8 +200,6 @@ public class Level
 				if(level.getPixel(i, j)==PLAYER)
 				{
 					player=new Player(new Vector3f((i+0.5f)*CUBE_HEIGHT,0.4375f,(j+0.5f)*CUBE_LENGTH));
-					Transform.setCamera(player.getCamera());
-					Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
 				}
 				
 			}

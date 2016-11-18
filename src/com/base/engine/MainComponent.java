@@ -11,7 +11,7 @@ public class MainComponent
 	
 	private boolean isRunning;
 	
-	public MainComponent()
+	public MainComponent() throws InterruptedException
 	{
 		RenderUtil.initGraphics();
 		isRunning=false;
@@ -112,7 +112,7 @@ public class MainComponent
 		Window.destroy();
 	}
 	
-	public static void main(String[] arg)
+	public static void main(String[] arg) throws InterruptedException
 	{
 		Window.createWindow(HEIGHT, WIDTH, TITLE);
 		

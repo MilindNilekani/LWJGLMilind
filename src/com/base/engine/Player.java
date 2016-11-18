@@ -90,6 +90,7 @@ public class Player {
 		
 		ammoTens=new UI(-0.105f,-0.0645f,position);
 		ammoUnits=new UI(-0.113f,-0.0650f,position);
+		movement=new Vector3f(0,0,0);
 		
 	}
 	
@@ -208,7 +209,7 @@ public class Player {
 	public void update()
 	{
 		//-----------------Collision--------------//
-		float movAmt=2*(float)(Time.getDelta());
+		float movAmt=3*(float)(Time.getDelta());
 		movement.setY(0);
 		if(movement.length()>0)
 			movement=movement.normalizeIntoUnitVector();
@@ -221,7 +222,7 @@ public class Player {
 			camera.move(movement, movAmt);
 		
 		//--------------------Gun------------------//
-		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.012f))));
+		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.010f))));
 		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
 		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
 		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));

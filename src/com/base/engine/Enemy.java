@@ -25,7 +25,7 @@ public class Enemy
 	public static final int STATE_DEAD=4;
 	
 	public static final int MIN_DAMAGE=5;
-	public static final int MAX_DAMAGE=30;
+	public static final int MAX_DAMAGE=18;
 	
 	public static final float ATTACK_PROB=0.5f;
 	public static final int MAX_HEALTH=100;
@@ -72,6 +72,9 @@ public class Enemy
 			animations.add(ResourceLoader.loadTexture("Fire4.png"));
 			animations.add(ResourceLoader.loadTexture("Fire5.png"));
 			animations.add(ResourceLoader.loadTexture("Fire6.png"));
+			
+			animations.add(ResourceLoader.loadTexture("Chase 1.png"));
+			animations.add(ResourceLoader.loadTexture("Chase 2.png"));
 		}
 		this.id=id;
 		deathTime=0;
@@ -173,14 +176,14 @@ public class Enemy
 	{
 		double time=(double)Time.getTime()/(double)Time.SECOND;
 		double timeDecimals=(double)(time-(int)time);
-		/*if(timeDecimals < 0.25)
-			material.setTexture(animations.get(0));
-		else if(timeDecimals < 0.5)
-			material.setTexture(animations.get(1));
-		else if(timeDecimals < 0.75)
-			material.setTexture(animations.get(2));
+		if(timeDecimals < 0.5)
+			material.setTexture(animations.get(13));
+		//else if(timeDecimals < 0.5)
+		//	material.setTexture(animations.get(14));
+		//else if(timeDecimals < 0.75)
+		//	material.setTexture(animations.get(2));
 		else
-			material.setTexture(animations.get(3));*/
+			material.setTexture(animations.get(14));
 		if(random.nextDouble() < ATTACK_PROB * Time.getDelta())
 			state=STATE_ATTACK;
 		if(distance>STOP_CHASE_DISTANCE)

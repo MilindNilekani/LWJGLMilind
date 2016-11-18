@@ -7,13 +7,12 @@ public class Game
 	private static Level level;
 	private static boolean isRunning;
 	private static final Clip BACKGROUND_MUSIC=ResourceLoader.loadAudio("d_e1m1.mid");
+	private static int levelNum=0;
+	private float inBetweenLevelsTimer=0.0f;
 
-	public Game()
+	public Game() throws InterruptedException
 	{
-		level=new Level("level1.png");
-		isRunning=true;
-		AudioUtil.playAudio(BACKGROUND_MUSIC,10);
-		AudioUtil.loopAudio(BACKGROUND_MUSIC);
+		loadNextLevel();
 	}
 	
 	public void input()
@@ -26,13 +25,26 @@ public class Game
 		if(isRunning)
 			level.update();
 		else
+		{
 			AudioUtil.stopAudio(BACKGROUND_MUSIC);
+		}
 	}
 	
 	public void render()
 	{
 		if(isRunning)
 			level.render();
+	}
+	
+	public static void loadNextLevel()
+	{
+		levelNum++;
+		level=new Level("level" + levelNum + ".png");
+		isRunning=true;
+		Transform.setCamera(level.getPlayer().getCamera());
+		Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
+		AudioUtil.playAudio(BACKGROUND_MUSIC,10);
+		AudioUtil.loopAudio(BACKGROUND_MUSIC);
 	}
 	
 	public static Level getLevel()
