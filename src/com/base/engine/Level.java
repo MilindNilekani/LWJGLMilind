@@ -159,6 +159,7 @@ public class Level
 			if(e.subtract(position).length()<1.0f)
 			{
 				Game.setIsRunning(false);
+				AudioUtil.stopAudio(Game.getCurrentClip());
 				Game.loadNextLevel();
 			}
 		}
@@ -275,7 +276,7 @@ public class Level
 				}
 				else
 				{
-					Vector2f enemySize=new Vector2f(0.2f,0.2f);
+					Vector2f enemySize=new Vector2f(0.25f,0.25f);
 					Vector3f enemyPos3f=e.getTransform().getTranslation();
 					Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
 					Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);

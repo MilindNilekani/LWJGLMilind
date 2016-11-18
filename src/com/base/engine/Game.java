@@ -1,17 +1,29 @@
 package com.base.engine;
 
+import java.util.ArrayList;
+
 import javax.sound.sampled.Clip;
 
 public class Game 
 {
 	private static Level level;
 	private static boolean isRunning;
-	private static final Clip BACKGROUND_MUSIC=ResourceLoader.loadAudio("d_e1m1.mid");
+	private static ArrayList<Clip> playlist;
 	private static int levelNum=0;
 	private static final int NUMBERLEVELS=2;
-
+	
+	public static Clip getCurrentClip()
+	{
+		return playlist.get(levelNum-1);
+	}
+	
 	public Game()
 	{
+		playlist=new ArrayList<Clip>();
+		for(int i=0;i<NUMBERLEVELS;i++)
+		{
+			playlist.add(ResourceLoader.loadAudio("d_e1m"+(i+1)+".mid"));
+		}
 		loadNextLevel();
 	}
 	
@@ -24,10 +36,6 @@ public class Game
 	{
 		if(isRunning)
 			level.update();
-		else
-		{
-			AudioUtil.stopAudio(BACKGROUND_MUSIC);
-		}
 	}
 	
 	public void render()
@@ -45,8 +53,8 @@ public class Game
 			isRunning=true;
 			Transform.setCamera(level.getPlayer().getCamera());
 			Transform.setProjection(70, 0.01f, 1000f, Window.getWidth(), Window.getHeight());
-			AudioUtil.playAudio(BACKGROUND_MUSIC,10);
-			AudioUtil.loopAudio(BACKGROUND_MUSIC);
+			AudioUtil.playAudio(playlist.get(levelNum-1),10);
+			AudioUtil.loopAudio(playlist.get(levelNum-1));
 		}
 	}
 	

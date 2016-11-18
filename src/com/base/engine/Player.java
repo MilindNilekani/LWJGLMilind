@@ -222,7 +222,7 @@ public class Player {
 			camera.move(movement, movAmt);
 		
 		//--------------------Gun------------------//
-		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.010f))));
+		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.011f))));
 		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
 		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
 		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
