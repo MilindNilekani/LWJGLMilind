@@ -23,9 +23,9 @@ public class RenderUtil
 	}
 	
 	public static void unbindTextures()
-{
+	{
 		glBindTexture(GL_TEXTURE_2D,0);
-}
+	}
 	
 	public static void initGraphics()
 	{
