@@ -209,7 +209,7 @@ public class Player {
 	public void update()
 	{
 		//-----------------Collision--------------//
-		float movAmt=3*(float)(Time.getDelta());
+		float movAmt=2*(float)(Time.getDelta());
 		movement.setY(0);
 		if(movement.length()>0)
 			movement=movement.normalizeIntoUnitVector();
