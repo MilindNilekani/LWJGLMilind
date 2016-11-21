@@ -1,7 +1,6 @@
 package com.base.engine;
 
 import java.util.ArrayList;
-import javax.sound.sampled.Clip;
 
 import java.util.Random;
 
@@ -9,7 +8,7 @@ import org.lwjgl.input.Keyboard;
 
 public class Player {
 	
-	public static final float GUN_SCALE = 0.06f;
+	public static final float GUN_SCALE = 0.15f;
 	public static final float GUN_SIZEY = GUN_SCALE;
 	public static final float GUN_SIZEX = (float)((double)GUN_SIZEY / (1.0379746835443037974683544303797 * 2.0));
 	public static final float GUN_START = 0;
@@ -48,7 +47,7 @@ public class Player {
 	private Mesh gunMesh;
 	private Transform gunTransform;
 	private Shader gunShader;
-	private Material gunMaterial, gunFireMaterial, punchMaterial;
+	private Material gunMaterial, punchMaterial;
 	private static boolean mouseLocked=false;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
@@ -58,15 +57,25 @@ public class Player {
 	
 	private String currentWeaponID;
 	
+	private static ArrayList<Texture> walkingAnimations;
+	
 	private ArrayList<String> collectedWeaponsID;
-	//Punch
-	//Pistol
 	
 	private UI healthTens, healthUnits, healthHundreds;
 	private UI ammoTens, ammoUnits;
 	
 	public Player(Vector3f position)
 	{
+		if(walkingAnimations==null)
+		{
+			walkingAnimations=new ArrayList<Texture>();
+			walkingAnimations.add(ResourceLoader.loadTexture("/walking_gun/1.png"));
+			walkingAnimations.add(ResourceLoader.loadTexture("/walking_gun/2.png"));
+			walkingAnimations.add(ResourceLoader.loadTexture("/walking_gun/3.png"));
+			walkingAnimations.add(ResourceLoader.loadTexture("/walking_gun/4.png"));
+			walkingAnimations.add(ResourceLoader.loadTexture("/walking_gun/5.png"));
+			walkingAnimations.add(ResourceLoader.loadTexture("/walking_gun/6.png"));
+		}
 		//Initiliaze player values
 		ammo=MAX_AMMO;
 		health=MAX_HEALTH;
@@ -82,14 +91,13 @@ public class Player {
 		Input.setCursor(false);
 
 		gunFireTime=0;
-		gunFireMaterial = new Material(ResourceLoader.loadTexture("PISFA0.png"));
 		punchMaterial=new Material(ResourceLoader.loadTexture("hand.png"));
 		
 		//Gun stuff
 		gunTransform=new Transform();
 		gunShader=new BasicShader();
 		gunTransform.setTranslation(position);
-		gunMaterial=new Material(ResourceLoader.loadTexture("PISGB0.png"));
+		gunMaterial=new Material(walkingAnimations.get(0));
 		gunMesh=new Mesh();
 
 		Vertex[] vertices = new Vertex[]{new Vertex(new Vector3f(-GUN_SIZEX,GUN_START,GUN_START), new Vector2f(TEX_MAX_X,TEX_MAX_Y)),
@@ -201,7 +209,7 @@ public class Player {
 						Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
 						Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
 				
-						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true, true);
+						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
 						ammo--;
 					}
@@ -213,7 +221,7 @@ public class Player {
 					Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
 					Vector2f lineEnd=lineStart.add(dir.multiply(PUNCH_DISTANCE));
 					
-					Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd, true, false);
+					Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd, true);
 				}
 			}
 		}
@@ -222,14 +230,21 @@ public class Player {
 		
 		//WASD movement
 		if(Input.getKey(Keyboard.KEY_W))
+		{
 			movement=movement.add(camera.getForward());
+		}
 		if(Input.getKey(Keyboard.KEY_S))
+		{
 			movement=movement.subtract(camera.getForward());
+		}
 		if(Input.getKey(Keyboard.KEY_A))
+		{
 			movement=movement.add(camera.getLeft());
+		}
 		if(Input.getKey(Keyboard.KEY_D))
+		{
 			movement=movement.add(camera.getRight());
-		
+		}
 		//Mouse movement camera
 		if(mouseLocked)
 		{
@@ -261,17 +276,47 @@ public class Player {
 			camera.move(movement, movAmt);
 		
 		//--------------------Gun------------------//
+		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f)));
+		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
+		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
+		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
+		if(dirToCamera.getX() < 0)
+			angleCamera+=180;
+		gunTransform.getRotation().setY(angleCamera+90);
 		
-			gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.011f))));
-			gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
-			Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
-			float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
-			if(dirToCamera.getX() < 0)
-				angleCamera+=180;
-			gunTransform.getRotation().setY(angleCamera+90);
-		
-		
-		//--------------------Hand--------------------//
+		if(currentWeaponID.equals(PISTOL))
+		{
+			if(Input.getKey(Keyboard.KEY_W) || Input.getKey(Keyboard.KEY_A) || Input.getKey(Keyboard.KEY_S) || Input.getKey(Keyboard.KEY_D))
+			{
+				double time=(double)Time.getTime()/(double)Time.SECOND;
+				double timeDecimals=(double)(time-(int)time);
+				if(timeDecimals<0.1666666666666667)
+				{
+				gunMaterial.setTexture(walkingAnimations.get(0));
+				}
+				else if(timeDecimals<0.3333333333333333)
+				{
+					gunMaterial.setTexture(walkingAnimations.get(1));
+				}
+				else if(timeDecimals<0.5)
+				{
+					gunMaterial.setTexture(walkingAnimations.get(2));
+				}
+				else if(timeDecimals<0.6666666666666667)
+				{
+					gunMaterial.setTexture(walkingAnimations.get(3));
+				}
+				else if(timeDecimals<0.833333333333333)
+				{
+					gunMaterial.setTexture(walkingAnimations.get(4));
+				}
+				else if(timeDecimals<0.99)
+				{
+					gunMaterial.setTexture(walkingAnimations.get(5));
+				}
+			
+			}
+		}
 		
 		//-----------------Health----------------------//
 		//Health units stuff
@@ -306,19 +351,11 @@ public class Player {
 		//Gun Sprite stuff
 		if(currentWeaponID.equals(PISTOL))
 		{
-			if((double)Time.getTime()/Time.SECOND < gunFireTime + GUN_FIRE_ANIMATIONTIME)
-			{
-				gunShader.bind();
-				gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunFireMaterial);
-				gunMesh.draw();
-			}
-			else
-			{
-				gunShader.bind();
-				gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
-				gunMesh.draw();
-			}
+			gunShader.bind();
+			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
+			gunMesh.draw();
 		}
+		//Punch sprite stuff
 		else if(currentWeaponID.equals(PUNCH))
 		{
 			gunShader.bind();

@@ -36,8 +36,6 @@ public class Game
 	{
 		if(isRunning)
 			level.update();
-		else
-			AudioUtil.stopAudio(playlist.get(levelNum-2));
 	}
 	
 	public void render()
