@@ -253,7 +253,7 @@ public class Level
 		return result;
 	}
 	
-	public Vector2f checkCollisionOfBullet(Vector2f start, Vector2f end, boolean enemy)
+	public Vector2f checkCollisionOfBullet(Vector2f start, Vector2f end, boolean enemy, boolean gunshot)
 	{
 		Vector2f nearest=null;
 		for(int i=0;i<collisionStart.size();i++)
@@ -276,7 +276,11 @@ public class Level
 				}
 				else
 				{
-					Vector2f enemySize=new Vector2f(0.25f,0.25f);
+					Vector2f enemySize;
+					if(gunshot)
+						enemySize=new Vector2f(0.25f,0.25f);
+					else
+						enemySize=new Vector2f(0.35f,0.35f);
 					Vector3f enemyPos3f=e.getTransform().getTranslation();
 					Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
 					Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);

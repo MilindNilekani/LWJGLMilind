@@ -20,14 +20,20 @@ public class Player {
 	public static final float UI_START = 0;
 	
 	public static final float SHOOT_DISTANCE=100.0f;
+	public static final float PUNCH_DISTANCE=10.0f;
 
 	public static final float OFFSET_X = 0.0f;
 	public static final float OFFSET_Y = 0.0f;
+	
+	public static final String PISTOL="Pistol";
+	public static final String PUNCH="Punch";
 
 	public static final float TEX_MIN_X = -OFFSET_X;
 	public static final float TEX_MAX_X = -1 - OFFSET_X;
 	public static final float TEX_MIN_Y = -OFFSET_Y;
 	public static final float TEX_MAX_Y = 1 - OFFSET_Y;
+	
+	public static final Vector3f VECTOR_ZERO=new Vector3f(0,0,0);
 	
 	private static final float GUN_FIRE_ANIMATIONTIME = 0.3f;
 	
@@ -42,13 +48,19 @@ public class Player {
 	private Mesh gunMesh;
 	private Transform gunTransform;
 	private Shader gunShader;
-	private Material gunMaterial, gunFireMaterial;
+	private Material gunMaterial, gunFireMaterial, punchMaterial;
 	private static boolean mouseLocked=false;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
 	private Vector3f movement;
 	private int health;
 	private int ammo;
 	private double gunFireTime;
+	
+	private String currentWeaponID;
+	
+	private ArrayList<String> collectedWeaponsID;
+	//Punch
+	//Pistol
 	
 	private UI healthTens, healthUnits, healthHundreds;
 	private UI ammoTens, ammoUnits;
@@ -58,6 +70,11 @@ public class Player {
 		//Initiliaze player values
 		ammo=MAX_AMMO;
 		health=MAX_HEALTH;
+		collectedWeaponsID=new ArrayList<String>();
+		collectedWeaponsID.add(PISTOL);
+		collectedWeaponsID.add(PUNCH);
+		
+		currentWeaponID=PISTOL;
 		
 		//Initialize objects for classes
 		random=new Random();
@@ -66,6 +83,7 @@ public class Player {
 
 		gunFireTime=0;
 		gunFireMaterial = new Material(ResourceLoader.loadTexture("PISFA0.png"));
+		punchMaterial=new Material(ResourceLoader.loadTexture("hand.png"));
 		
 		//Gun stuff
 		gunTransform=new Transform();
@@ -90,7 +108,7 @@ public class Player {
 		
 		ammoTens=new UI(-0.105f,-0.0645f,position);
 		ammoUnits=new UI(-0.113f,-0.0650f,position);
-		movement=new Vector3f(0,0,0);
+		movement=VECTOR_ZERO;
 		
 	}
 	
@@ -142,17 +160,29 @@ public class Player {
 	{
 		float sen=0.1f;
 		
+		//Open exit doors
 		if(Input.getKeyDown(Keyboard.KEY_E))
 		{
-			//Open exit door
 			Game.getLevel().openDoors(camera.getPos());
 		}
+		//Exit mouse lock
 		if(Input.getKey(Keyboard.KEY_ESCAPE))
 		{
 			Input.setCursor(true);
 			mouseLocked=false;
 		}
 		
+		//Switch weapons
+		if(Input.getKey(Keyboard.KEY_1))
+		{
+			currentWeaponID=PISTOL;
+		}
+		else if(Input.getKey(Keyboard.KEY_2))
+		{
+			currentWeaponID=PUNCH;
+		}
+		
+		//Left click ie shoot
 		if(Input.getMouseDown(0))
 		{
 			if(!mouseLocked)
@@ -163,7 +193,7 @@ public class Player {
 			}
 			else
 			{
-				if(ammo>0)
+				if(ammo>0 && currentWeaponID.equals(PISTOL))
 				{
 					if((double)Time.getTime()/Time.SECOND - gunFireTime>GUN_FIRE_ANIMATIONTIME)
 					{
@@ -171,17 +201,26 @@ public class Player {
 						Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
 						Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
 				
-						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
+						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true, true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
 						ammo--;
 					}
 				}
+				else if(currentWeaponID.equals(PUNCH))
+				{
+					//TODO:Punch animation
+					Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
+					Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
+					Vector2f lineEnd=lineStart.add(dir.multiply(PUNCH_DISTANCE));
+					
+					Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd, true, false);
+				}
 			}
 		}
 		
-		movement=new Vector3f(0,0,0);
+		movement=VECTOR_ZERO;
 		
-		
+		//WASD movement
 		if(Input.getKey(Keyboard.KEY_W))
 			movement=movement.add(camera.getForward());
 		if(Input.getKey(Keyboard.KEY_S))
@@ -191,7 +230,7 @@ public class Player {
 		if(Input.getKey(Keyboard.KEY_D))
 			movement=movement.add(camera.getRight());
 		
-		
+		//Mouse movement camera
 		if(mouseLocked)
 		{
 			Vector2f deltaPos=Input.getMousePosition().subtract(centerPosition);
@@ -222,14 +261,17 @@ public class Player {
 			camera.move(movement, movAmt);
 		
 		//--------------------Gun------------------//
-		gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.011f))));
-		gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
-		Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
-		float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
-		if(dirToCamera.getX() < 0)
-			angleCamera+=180;
-		gunTransform.getRotation().setY(angleCamera+90);
 		
+			gunTransform.setTranslation(camera.getPos().add(camera.getForward().multiply(0.105f).add(camera.getLeft().multiply(0.011f))));
+			gunTransform.getTranslation().setY(gunTransform.getTranslation().getY()-0.0740f);
+			Vector3f dirToCamera = Transform.getCamera().getPos().subtract(gunTransform.getTranslation());
+			float angleCamera=(float)Math.toDegrees(Math.atan(dirToCamera.getZ()/dirToCamera.getX()));
+			if(dirToCamera.getX() < 0)
+				angleCamera+=180;
+			gunTransform.getRotation().setY(angleCamera+90);
+		
+		
+		//--------------------Hand--------------------//
 		
 		//-----------------Health----------------------//
 		//Health units stuff
@@ -262,16 +304,25 @@ public class Player {
 	public void render()
 	{
 		//Gun Sprite stuff
-		if((double)Time.getTime()/Time.SECOND < gunFireTime + GUN_FIRE_ANIMATIONTIME)
+		if(currentWeaponID.equals(PISTOL))
 		{
-			gunShader.bind();
-			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunFireMaterial);
-			gunMesh.draw();
+			if((double)Time.getTime()/Time.SECOND < gunFireTime + GUN_FIRE_ANIMATIONTIME)
+			{
+				gunShader.bind();
+				gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunFireMaterial);
+				gunMesh.draw();
+			}
+			else
+			{
+				gunShader.bind();
+				gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
+				gunMesh.draw();
+			}
 		}
-		else
+		else if(currentWeaponID.equals(PUNCH))
 		{
 			gunShader.bind();
-			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), gunMaterial);
+			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), punchMaterial);
 			gunMesh.draw();
 		}
 		

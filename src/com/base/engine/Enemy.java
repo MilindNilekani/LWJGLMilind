@@ -157,7 +157,7 @@ public class Enemy
 				Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ());
 				Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
 				
-				Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd, false);
+				Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd, false, true);
 				
 				Vector2f playerIntersectVector=new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ());
 				
@@ -232,7 +232,7 @@ public class Enemy
 					Vector2f castDirection=new Vector2f(orientation.getX(), orientation.getZ()).rotate((random.nextFloat()-0.5f)*10.0f);
 					Vector2f lineEnd=lineStart.add(castDirection.multiply(SHOOT_DISTANCE));
 		
-					Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd,false);
+					Vector2f collision=Game.getLevel().checkCollisionOfBullet(lineStart,lineEnd,false, true);
 		
 					Vector2f playerIntersectVector=Game.getLevel().lineIntersectRect(lineStart,lineEnd,new Vector2f(Transform.getCamera().getPos().getX(), Transform.getCamera().getPos().getZ()),new Vector2f(0.2f,0.2f));
 		
