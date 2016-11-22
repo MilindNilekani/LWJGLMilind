@@ -34,18 +34,18 @@ public class UI
 		if(numbersUI==null)
 		{
 			numbersUI=new ArrayList<Texture>();
-			numbersUI.add(ResourceLoader.loadTexture("0.png"));
-			numbersUI.add(ResourceLoader.loadTexture("1.png"));
-			numbersUI.add(ResourceLoader.loadTexture("2.png"));
-			numbersUI.add(ResourceLoader.loadTexture("3.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/0.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/1.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/2.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/3.png"));
 			
-			numbersUI.add(ResourceLoader.loadTexture("4.png"));
-			numbersUI.add(ResourceLoader.loadTexture("5.png"));
-			numbersUI.add(ResourceLoader.loadTexture("6.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/4.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/5.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/6.png"));
 			
-			numbersUI.add(ResourceLoader.loadTexture("7.png"));
-			numbersUI.add(ResourceLoader.loadTexture("8.png"));
-			numbersUI.add(ResourceLoader.loadTexture("9.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/7.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/8.png"));
+			numbersUI.add(ResourceLoader.loadTexture("ui_numbers/9.png"));
 		}
 		xOffset=x;
 		yOffset=y;
