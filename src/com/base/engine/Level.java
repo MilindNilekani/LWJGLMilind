@@ -31,6 +31,7 @@ public class Level
 	private static final int GRAFITTI=-65536;
 	private static final int PICTURE_FRAME=-16711936;
 	private static final int EXIT_POINT=-16733696;
+	private static final int EXPLOSIVE_BARRELS=-14505234;
 	
 	private Bitmap level;
 	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti, meshPictureFrame, meshExitPoint;
@@ -47,6 +48,9 @@ public class Level
 	
 	private ArrayList<Ammo> ammo;
 	private ArrayList<Ammo> ammoCollected;
+	
+	private ArrayList<ExplosiveBarrel> barrelsInLevel;
+	private ArrayList<ExplosiveBarrel> barrelsExploded;
 	
 	private ArrayList<Vector3f> exitPoints;
 	
@@ -68,6 +72,9 @@ public class Level
 		exitPoints=new ArrayList<Vector3f>();
 		ammo=new ArrayList<Ammo>();
 		ammoCollected=new ArrayList<Ammo>();
+		
+		barrelsInLevel=new ArrayList<ExplosiveBarrel>();
+		barrelsExploded=new ArrayList<ExplosiveBarrel>();
 		
 		bananas=new ArrayList<Banana>();
 		bananasEaten=new ArrayList<Banana>();
@@ -111,6 +118,7 @@ public class Level
 		generateBananas();
 		generateAmmo();
 		generateExitPoints(meshExitPoint);
+		generateBarrels();
 	}
 	
 	public Player getPlayer()
@@ -148,6 +156,20 @@ public class Level
 					bananas.add(new Banana(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
 				}
 				
+			}
+		}
+	}
+	
+	private void generateBarrels()
+	{
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==EXPLOSIVE_BARRELS)
+				{
+					barrelsInLevel.add(new ExplosiveBarrel(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
+				}
 			}
 		}
 	}
@@ -266,6 +288,38 @@ public class Level
 		}
 		if(enemy)
 		{
+			Vector2f nearestBarrelIntersect=null;
+			ExplosiveBarrel nearestBarrel=null;
+			for(ExplosiveBarrel eb:barrelsInLevel)
+			{
+				if(barrelsExploded.contains(eb)==true)
+				{
+					continue;
+				}
+				else
+				{
+					Vector2f enemySize=new Vector2f(0.5f,0.5f);
+					Vector3f enemyPos3f=eb.getTransform().getTranslation();
+					Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
+					Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);
+				
+					if(collision!=null && (nearestBarrelIntersect==null || nearestBarrelIntersect.subtract(start).length() > collision.subtract(start).length()))
+						nearestBarrelIntersect=collision;
+				
+					if(nearestBarrelIntersect==collision)
+						nearestBarrel=eb;
+				}
+			}
+			
+			if(nearestBarrelIntersect!=null && (nearest==null || nearestBarrelIntersect.subtract(start).length()<nearest.subtract(start).length()))
+			{
+				if(nearestBarrel!=null)
+				{
+					nearestBarrel.damage(player.getDamage());
+					AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
+				}
+			}
+			
 			Vector2f nearestEnemyIntersect=null;
 			Enemy nearestEnemy=null;
 			for(Enemy e:enemyList)
@@ -288,6 +342,7 @@ public class Level
 						nearestEnemy=e;
 				}
 			}
+			
 			if(nearestEnemyIntersect!=null && (nearest==null || nearestEnemyIntersect.subtract(start).length()<nearest.subtract(start).length()))
 			{
 				if(nearestEnemy!=null)
@@ -365,7 +420,10 @@ public class Level
 	
 	public void update()
 	{
-		
+		for(ExplosiveBarrel eb:barrelsInLevel)
+			eb.update();
+		for(ExplosiveBarrel eb:barrelsExploded)
+			barrelsInLevel.remove(eb);
 		for(Enemy enemy:enemyList)
 			enemy.update();
 		for(Banana banana:bananas)
@@ -405,6 +463,10 @@ public class Level
 		shaderExitPoint.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialExitPoint);
 		meshExitPoint.draw();
 		
+		for(ExplosiveBarrel eb:barrelsInLevel)
+		{
+			eb.render();
+		}
 		for(Banana banana:bananas)
 			banana.render();
 		for(Enemy enemy:enemyList)
@@ -780,6 +842,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
+				System.out.println(level.getPixel(i, j));
 				if(level.getPixel(i, j)==BLACK)
 					continue;
 				
@@ -867,6 +930,11 @@ public class Level
 	public void removeAmmoOnCollected(Ammo a)
 	{
 		ammoCollected.add(a);
+	}
+	
+	public void removeBarrelsOnExplosion(ExplosiveBarrel eb)
+	{
+		barrelsExploded.add(eb);
 	}
 
 }
