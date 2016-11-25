@@ -23,14 +23,14 @@ public class ExplosiveBarrel
 	public static final int STATE_EXPLODING=2;
 	public static final int STATE_EXPLODED=3;
 	
-	public static final int MIN_DAMAGE=25;
+	public static final int MIN_DAMAGE=15;
 	public static final int MAX_DAMAGE=45;
 	
 	public static final float ATTACK_PROB=0.5f;
 	public static final int MAX_HEALTH=50;
 	
-	public static final float ENEMY_LENGTH=0.2f;
-	public static final float ENEMY_WIDTH=0.2f;
+	public static final float BARREL_LENGTH=0.2f;
+	public static final float BARREL_WIDTH=0.2f;
 	public static final float BLAST_RADIUS=5.0f;
 	
 	private static Mesh mesh;
@@ -39,6 +39,8 @@ public class ExplosiveBarrel
 	private Transform transform;
 	private Shader shader;
 	private double explodingTime;
+	
+	private boolean hurtPlayer=false;
 	
 	private int id;
 	private int state;
@@ -90,6 +92,7 @@ public class ExplosiveBarrel
 		if(health<=0)
 		{
 			health=0;
+			hurtPlayer=true;
 			state=STATE_EXPLODING;
 		}
 	}
@@ -142,9 +145,10 @@ public class ExplosiveBarrel
 					}
 				}
 			}
-			if(distance<BLAST_RADIUS)
+			if(distance<BLAST_RADIUS && hurtPlayer)
 			{
 				Game.getLevel().getPlayer().damage(random.nextInt(MAX_DAMAGE-MIN_DAMAGE)+MIN_DAMAGE);
+				hurtPlayer=false;
 			}
 		}
 		else

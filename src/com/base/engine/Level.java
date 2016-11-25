@@ -224,7 +224,6 @@ public class Level
 				{
 					player=new Player(new Vector3f((i+0.5f)*CUBE_HEIGHT,0.4375f,(j+0.5f)*CUBE_LENGTH));
 				}
-				
 			}
 		}
 	}
@@ -298,7 +297,7 @@ public class Level
 				}
 				else
 				{
-					Vector2f enemySize=new Vector2f(0.5f,0.5f);
+					Vector2f enemySize=new Vector2f(eb.BARREL_WIDTH,eb.BARREL_LENGTH);
 					Vector3f enemyPos3f=eb.getTransform().getTranslation();
 					Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
 					Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);
@@ -330,7 +329,7 @@ public class Level
 				}
 				else
 				{
-					Vector2f enemySize=new Vector2f(0.5f,0.5f);
+					Vector2f enemySize=new Vector2f(e.ENEMY_WIDTH,e.ENEMY_LENGTH);
 					Vector3f enemyPos3f=e.getTransform().getTranslation();
 					Vector2f enemyPos2f=new Vector2f(enemyPos3f.getX(),enemyPos3f.getZ());
 					Vector2f collision=lineIntersectRect(start,end,enemyPos2f, enemySize);
@@ -371,19 +370,19 @@ public class Level
 		Vector2f res=null;
 		
 		//1st side
-		Vector2f collision=findPointOfIntersection(lineStart,lineEnd,pos, new Vector2f(pos.getX()+size.getX(), pos.getY()));
+		Vector2f collision=findPointOfIntersection(lineStart,lineEnd,pos, new Vector2f(pos.getX()-size.getX(), pos.getY()));
 		
 		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
 			res=collision;
 		
 		//2nd side
-		collision=findPointOfIntersection(lineStart,lineEnd,pos, new Vector2f(pos.getX(), pos.getY()+size.getY()));
+		collision=findPointOfIntersection(lineStart,lineEnd,pos, new Vector2f(pos.getX()+size.getX(), pos.getY()+size.getY()));
 		
 		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
 			res=collision;
 		
 		//3rd side
-		collision=findPointOfIntersection(lineStart,lineEnd,new Vector2f(pos.getX(), pos.getY()+size.getY()), pos.add(size));
+		collision=findPointOfIntersection(lineStart,lineEnd,new Vector2f(pos.getX()-size.getX(), pos.getY()+size.getY()), pos.add(size));
 				
 		if(collision!=null && (res==null || res.subtract(lineStart).length() > collision.subtract(lineStart).length()))
 				res=collision;
@@ -522,7 +521,7 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==WHITE  || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
+				if(level.getPixel(i, j)==WHITE  || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS || level.getPixel(i, j)==EXPLOSIVE_BARRELS)
 				{
 					if(level.getPixel(i, j-1)==PICTURE_FRAME)
 					{
@@ -606,7 +605,7 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS || level.getPixel(i, j)==EXPLOSIVE_BARRELS)
 				{
 					if(level.getPixel(i, j-1)==GRAFITTI)
 					{
@@ -688,7 +687,7 @@ public class Level
 				float yLow=0;
 				
 				//Wall
-				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS || level.getPixel(i, j)==EXPLOSIVE_BARRELS)
 				{
 					if(level.getPixel(i, j-1)==EXIT_POINT)
 					{
@@ -769,7 +768,7 @@ public class Level
 				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
 					continue;
 				//Wall
-				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER  || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS)
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER  || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS || level.getPixel(i, j)==EXPLOSIVE_BARRELS)
 				{
 					if(level.getPixel(i, j-1)==BLACK)
 					{
