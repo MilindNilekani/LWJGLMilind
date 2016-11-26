@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class ExplosiveBarrel
 {
-	public static final float SCALE = 0.7f;
+	public static final float SCALE = 0.5f;
 	public static final float SIZEY = SCALE;
-	public static final float SIZEX = (float)((double)1.4 / (1.9310344827586206896551724137931 * 2.0));
+	public static final float SIZEX = (float)((double)0.7 / (1.9310344827586206896551724137931 * 2.0));
 	public static final float START = 0;
 
 	public static final float OFFSET_X = 0.0f;
