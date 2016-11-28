@@ -36,7 +36,6 @@ public class Player {
 	//Enum for weapon chosen
 	public static final String PISTOL="Pistol";
 	public static final String PUNCH="Punch";
-	public static final String RIFLE="Rifle";
 
 	//Vector3f.zero
 	public static final Vector3f VECTOR_ZERO=new Vector3f(0,0,0);
@@ -58,7 +57,7 @@ public class Player {
 	private Mesh gunMesh;
 	private Transform gunTransform;
 	private Shader gunShader;
-	private Material gunMaterial, punchMaterial, rifleMaterial;
+	private Material gunMaterial, punchMaterial;
 	
 	private static boolean mouseLocked=false;
 	private Vector2f centerPosition=new Vector2f(Window.getWidth()/2, Window.getHeight()/2);
@@ -103,7 +102,6 @@ public class Player {
 		collectedWeaponsID=new ArrayList<String>();
 		collectedWeaponsID.add(PISTOL);
 		collectedWeaponsID.add(PUNCH);
-		collectedWeaponsID.add(RIFLE);
 		currentWeaponID=PISTOL;
 		
 		//Initialize objects for classes
@@ -113,7 +111,6 @@ public class Player {
 
 		gunFireTime=0;
 		punchMaterial=new Material(ResourceLoader.loadTexture("hand.png"));
-		rifleMaterial=new Material(ResourceLoader.loadTexture("rifle.png"));
 		
 		//Gun stuff
 		gunTransform=new Transform();
@@ -211,11 +208,6 @@ public class Player {
 		{
 			currentWeaponID=PUNCH;
 		}
-		else if(Input.getKey(Keyboard.KEY_3))
-		{
-			currentWeaponID=RIFLE;
-		}
-		
 		//Left click ie shoot
 		if(Input.getMouseDown(0))
 		{
@@ -290,7 +282,7 @@ public class Player {
 	public void update()
 	{
 		//-----------------Collision--------------//
-		float movAmt=2*(float)(Time.getDelta());
+		float movAmt=2.5f*(float)(Time.getDelta());
 		movement.setY(0);
 		if(movement.length()>0)
 			movement=movement.normalizeIntoUnitVector();
@@ -406,12 +398,6 @@ public class Player {
 		{
 			gunShader.bind();
 			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), punchMaterial);
-			gunMesh.draw();
-		}
-		else if(currentWeaponID.equals(RIFLE))
-		{
-			gunShader.bind();
-			gunShader.updateUniforms(gunTransform.getTransformation(), gunTransform.getProjectedTransformation(), rifleMaterial);
 			gunMesh.draw();
 		}
 		//Health stuff
