@@ -57,24 +57,30 @@ public class Enemy
 		if(animations==null)
 		{
 			animations=new ArrayList<Texture>();
-			animations.add(ResourceLoader.loadTexture("Idle 1.png"));
-			animations.add(ResourceLoader.loadTexture("Idle 2.png"));
-			animations.add(ResourceLoader.loadTexture("Idle 3.png"));
-			animations.add(ResourceLoader.loadTexture("Idle 4.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/1.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/2.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/3.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/4.png"));
 			
-			animations.add(ResourceLoader.loadTexture("Idle 5.png"));
-			animations.add(ResourceLoader.loadTexture("Idle 6.png"));
-			animations.add(ResourceLoader.loadTexture("Idle 7.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/5.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/6.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Idle/7.png"));
 			
-			animations.add(ResourceLoader.loadTexture("Fire1.png"));
-			animations.add(ResourceLoader.loadTexture("Fire2.png"));
-			animations.add(ResourceLoader.loadTexture("Fire3.png"));
-			animations.add(ResourceLoader.loadTexture("Fire4.png"));
-			animations.add(ResourceLoader.loadTexture("Fire5.png"));
-			animations.add(ResourceLoader.loadTexture("Fire6.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Fire/1.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Fire/2.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Fire/3.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Fire/4.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Fire/5.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Fire/6.png"));
 			
-			animations.add(ResourceLoader.loadTexture("Chase 1.png"));
-			animations.add(ResourceLoader.loadTexture("Chase 2.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Move forward/1.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Move forward/2.png"));
+			
+			animations.add(ResourceLoader.loadTexture("Latest/Death/1.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Death/2.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Death/3.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Death/4.png"));
+			animations.add(ResourceLoader.loadTexture("Latest/Death/5.png"));
 		}
 		this.id=id;
 		deathTime=0;
@@ -115,7 +121,6 @@ public class Enemy
 			health=0;
 			state=STATE_DYING;
 		}
-		//System.out.println(health);
 	}
 	
 	private void idleUpdate(Vector3f orientation, float distance)
@@ -269,23 +274,19 @@ public class Enemy
 
 		if(time < deathTime + time1)
 		{
-			material.setTexture(animations.get(8));
-			transform.setScale(1,0.96428571428571428571428571428571f,1);
+			material.setTexture(animations.get(15));
 		}
 		else if(time < deathTime + time2)
 		{
-			material.setTexture(animations.get(9));
-			transform.setScale(1.7f,0.9f,1);
+			material.setTexture(animations.get(16));
 		}
 		else if(time < deathTime + time3)
 		{
-			material.setTexture(animations.get(10));
-			transform.setScale(1.7f,0.9f,1);
+			material.setTexture(animations.get(17));
 		}
 		else if(time < deathTime + time4)
 		{
-			material.setTexture(animations.get(11));
-			transform.setScale(1.7f,0.5f,1);
+			material.setTexture(animations.get(18));
 		}
 		else
 		{
@@ -295,8 +296,7 @@ public class Enemy
 	
 	private void deadUpdate(Vector3f orientation, float distance)
 	{
-		material.setTexture(animations.get(12));
-		transform.setScale(1.7586206896551724137931034482759f,0.28571428571428571428571428571429f,1);
+		material.setTexture(animations.get(19));
 		if(!addedToDeadList)
 		{
 			Game.getLevel().deleteDeadEnemy(id);
