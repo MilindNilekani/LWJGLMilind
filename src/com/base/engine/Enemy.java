@@ -3,6 +3,8 @@ package com.base.engine;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.sound.sampled.Clip;
+
 public class Enemy
 {
 	public static final float SCALE = 0.7f;
@@ -26,6 +28,8 @@ public class Enemy
 	
 	public static final int MIN_DAMAGE=5;
 	public static final int MAX_DAMAGE=18;
+	
+	private static final Clip DYING_SOUND=ResourceLoader.loadAudio("HurtGunshot.wav");
 	
 	public static final float ATTACK_PROB=0.5f;
 	public static final int MAX_HEALTH=100;
@@ -119,6 +123,7 @@ public class Enemy
 		if(health<=0)
 		{
 			health=0;
+			AudioUtil.playAudio(DYING_SOUND, 10);
 			state=STATE_DYING;
 		}
 	}
@@ -263,6 +268,7 @@ public class Enemy
 	private void dyingUpdate(Vector3f orientation, float distance)
 	{
 		double time = ((double)Time.getTime())/((double)Time.SECOND);
+		transform.setScale(0.98f,0.98f,0.98f);
 
 		if(deathTime == 0)
 			deathTime = time;

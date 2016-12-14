@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import java.util.Random;
 
+import javax.sound.sampled.Clip;
+
 import org.lwjgl.input.Keyboard;
 
 public class Player {
@@ -26,6 +28,11 @@ public class Player {
 	public static final float TEX_MAX_X = -1 - OFFSET_X;
 	public static final float TEX_MIN_Y = -OFFSET_Y;
 	public static final float TEX_MAX_Y = 1 - OFFSET_Y;
+	
+	private static final Clip GUNSHOT_AUDIO=ResourceLoader.loadAudio("Gunshot.wav");
+	private static final Clip AMMODONE_AUDIO=ResourceLoader.loadAudio("AmmoDone.wav");
+	private static final Clip AMMOREFILL_AUDIO=ResourceLoader.loadAudio("BulletsRefill.wav");
+	private static final Clip PUNCH_AUDIO=ResourceLoader.loadAudio("Punch.wav");
 	
 	//TODO:Punch texture scale
 	
@@ -173,6 +180,7 @@ public class Player {
 	}
 	public void gainAmmo(int val)
 	{
+		AudioUtil.playAudio(AMMODONE_AUDIO, 10);
 		ammo+=val;
 		if(ammo>MAX_AMMO)
 			ammo=MAX_AMMO;
@@ -226,7 +234,8 @@ public class Player {
 						Vector2f lineStart=new Vector2f(camera.getPos().getX(),camera.getPos().getZ());
 						Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
 						Vector2f lineEnd=lineStart.add(dir.multiply(SHOOT_DISTANCE));
-				
+						
+						AudioUtil.playAudio(GUNSHOT_AUDIO,10);
 						Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd,true);
 						gunFireTime=(double)Time.getTime()/Time.SECOND;
 						ammo--;
@@ -239,8 +248,13 @@ public class Player {
 					Vector2f dir=new Vector2f(camera.getForward().getX(), camera.getForward().getZ()).normalizeIntoUnitVector();
 					Vector2f lineEnd=lineStart.add(dir.multiply(PUNCH_DISTANCE));
 					
+					AudioUtil.playAudio(PUNCH_AUDIO,10);
 					Game.getLevel().checkCollisionOfBullet(lineStart, lineEnd, true);
 					gunFireTime=(double)Time.getTime()/Time.SECOND;
+				}
+				else
+				{
+					AudioUtil.playAudio(AMMOREFILL_AUDIO,10);
 				}
 			}
 		}

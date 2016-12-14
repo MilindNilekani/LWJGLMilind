@@ -3,6 +3,8 @@ package com.base.engine;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.sound.sampled.Clip;
+
 public class ExplosiveBarrel
 {
 	public static final float SCALE = 0.5f;
@@ -25,6 +27,8 @@ public class ExplosiveBarrel
 	
 	public static final int MIN_DAMAGE=15;
 	public static final int MAX_DAMAGE=45;
+	
+	private static final Clip EXPLODING_SOUND=ResourceLoader.loadAudio("BarrelExplosion.wav");
 	
 	public static final float ATTACK_PROB=0.5f;
 	public static final int MAX_HEALTH=50;
@@ -93,6 +97,7 @@ public class ExplosiveBarrel
 		{
 			health=0;
 			hurtPlayer=true;
+			AudioUtil.playAudio(EXPLODING_SOUND, 10);
 			state=STATE_EXPLODING;
 		}
 	}

@@ -41,7 +41,7 @@ public class Level
 	private ArrayList<Vector2f> collisionStart;
 	private ArrayList<Vector2f> collisionEnd;
 	
-	private static final Clip GUNSHOT_AUDIO=ResourceLoader.loadAudio("ClockTick2.wav");
+
 	
 	private ArrayList<Banana> bananas;
 	private ArrayList<Banana> bananasEaten;
@@ -315,7 +315,6 @@ public class Level
 				if(nearestBarrel!=null)
 				{
 					nearestBarrel.damage(player.getDamage());
-					AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
 				}
 			}
 			
@@ -347,7 +346,6 @@ public class Level
 				if(nearestEnemy!=null)
 				{
 					nearestEnemy.damage(player.getDamage());
-					AudioUtil.playAudio(GUNSHOT_AUDIO, 0);
 				}
 			}
 		}

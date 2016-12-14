@@ -1,5 +1,7 @@
 package com.base.engine;
 
+import javax.sound.sampled.Clip;
+
 public class Ammo {
 	public static final float PICKUP_DISTANCE = 0.75f;
 	public static final int INCREASE_AMOUNT = 15;

@@ -6,6 +6,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 
@@ -13,6 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class ResourceLoader 
@@ -23,11 +26,10 @@ public class ResourceLoader
 		
 		try
 		{
-		    AudioInputStream stream = AudioSystem.getAudioInputStream(new File("./res/audio/" + fileName));
+			InputStream isr=Class.class.getResourceAsStream("/res/audio/"+fileName);
+		    AudioInputStream stream = AudioSystem.getAudioInputStream(isr);
 		    clip = (Clip) AudioSystem.getLine(new DataLine.Info(Clip.class, stream.getFormat()));
 		    clip.open(stream);
-
-		    return clip;
 		}
 		catch (Exception e)
 		{
@@ -43,7 +45,8 @@ public class ResourceLoader
 		
 		try
 		{
-			BufferedImage image = ImageIO.read(new File("./res/textures/" + fileName));
+			InputStream isr=Class.class.getResourceAsStream("/res/textures/"+fileName);
+			BufferedImage image = ImageIO.read(isr);
 
 			boolean hasAlpha = image.getColorModel().hasAlpha();
 
@@ -93,12 +96,14 @@ public class ResourceLoader
 	
 	public static String loadShader(String fileName)
 	{
+		
 		StringBuilder shaderSource=new StringBuilder();
 		BufferedReader shaderReader=null;
 		
 		try
 		{
-			shaderReader=new BufferedReader(new FileReader("./res/shaders/" + fileName));
+			InputStreamReader isr=new InputStreamReader(Class.class.getResourceAsStream("/res/shaders/"+fileName));
+			shaderReader=new BufferedReader(isr);
 			String line;
 			while((line=shaderReader.readLine())!=null)
 			{
@@ -134,7 +139,8 @@ public class ResourceLoader
 		
 		try
 		{
-			meshReader=new BufferedReader(new FileReader("./res/models/" + fileName));
+			InputStreamReader isr=new InputStreamReader(Class.class.getResourceAsStream("/res/models/"+fileName));
+			meshReader=new BufferedReader(isr);
 			String line;
 			while((line=meshReader.readLine())!=null)
 			{
