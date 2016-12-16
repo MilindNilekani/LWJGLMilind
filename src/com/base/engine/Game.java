@@ -10,7 +10,7 @@ public class Game
 	private static boolean isRunning;
 	private static ArrayList<Clip> playlist;
 	private static int levelNum=0;
-	private static final int NUMBERLEVELS=2;
+	private static final int NUMBERLEVELS=3;
 	
 	public static Clip getCurrentClip()
 	{
@@ -20,7 +20,7 @@ public class Game
 	public Game()
 	{
 		playlist=new ArrayList<Clip>();
-		for(int i=0;i<NUMBERLEVELS;i++)
+		for(int i=0;i<NUMBERLEVELS-1;i++)
 		{
 			playlist.add(ResourceLoader.loadAudio("d_e1m"+(i+1)+".mid"));
 		}

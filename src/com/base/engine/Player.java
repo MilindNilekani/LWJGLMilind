@@ -144,12 +144,12 @@ public class Player {
 
 		gunMesh.addVertices(vertices, indices);
 		
-		healthUnits=new UI(0.105f, -0.0640f,position);
-		healthTens=new UI(0.113f,-0.0645f,position);
-		healthHundreds=new UI(0.121f,-0.0650f,position);
+		healthUnits=new UI(0.105f, 0.0630f,position);
+		healthTens=new UI(0.113f,0.0630f,position);
+		healthHundreds=new UI(0.121f,0.0630f,position);
 		
-		ammoTens=new UI(-0.105f,-0.0645f,position);
-		ammoUnits=new UI(-0.113f,-0.0650f,position);
+		ammoTens=new UI(-0.105f,0.0630f,position);
+		ammoUnits=new UI(-0.113f,0.0630f,position);
 		movement=VECTOR_ZERO;
 		
 	}
