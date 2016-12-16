@@ -32,11 +32,12 @@ public class Level
 	private static final int PICTURE_FRAME=-16711936;
 	private static final int EXIT_POINT=-16733696;
 	private static final int EXPLOSIVE_BARRELS=-14505234;
+	private static final int MOSS=-1118550;
 	
 	private Bitmap level;
-	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti, meshPictureFrame, meshExitPoint;
-	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti, shaderPictureFrame, shaderExitPoint;
-	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame, materialExitPoint;
+	private Mesh meshWall, meshFloor,meshCeiling, meshGrafitti, meshPictureFrame, meshExitPoint, meshMoss;
+	private Shader shaderWall,shaderFloor,shaderCeiling, shaderGrafitti, shaderPictureFrame, shaderExitPoint, shaderMoss;
+	private Material materialWall, materialFloor, materialCeiling, materialGrafitti, materialPictureFrame, materialExitPoint, materialMoss;
 	
 	private ArrayList<Vector2f> collisionStart;
 	private ArrayList<Vector2f> collisionEnd;
@@ -91,6 +92,7 @@ public class Level
 		meshGrafitti=new Mesh();
 		meshPictureFrame=new Mesh();
 		meshExitPoint=new Mesh();
+		meshMoss=new Mesh();
 		
 		shaderWall=new BasicShader();
 		shaderFloor=new BasicShader();
@@ -98,13 +100,15 @@ public class Level
 		shaderGrafitti=new BasicShader();
 		shaderPictureFrame=new BasicShader();
 		shaderExitPoint=new BasicShader();
+		shaderMoss=new BasicShader();
 		
-		materialWall=new Material(ResourceLoader.loadTexture("wall.png"));
+		materialWall=new Material(ResourceLoader.loadTexture("Wall.png"));
 		materialFloor=new Material(ResourceLoader.loadTexture("floor.png"));
-		materialCeiling=new Material(ResourceLoader.loadTexture("ceiling.png"));
-		materialGrafitti=new Material(ResourceLoader.loadTexture("grafitti.png"));
-		materialPictureFrame=new Material(ResourceLoader.loadTexture("poster.png"));
-		materialExitPoint=new Material(ResourceLoader.loadTexture("door.jpg"));
+		materialCeiling=new Material(ResourceLoader.loadTexture("Ceiling.png"));
+		materialGrafitti=new Material(ResourceLoader.loadTexture("Wall_graffiti.png"));
+		materialPictureFrame=new Material(ResourceLoader.loadTexture("Wall_Painting.png"));
+		materialExitPoint=new Material(ResourceLoader.loadTexture("door.png"));
+		materialMoss=new Material(ResourceLoader.loadTexture("Wall_Moss.png"));
 		
 		transform=new Transform();
 		
@@ -119,6 +123,7 @@ public class Level
 		generateAmmo();
 		generateExitPoints(meshExitPoint);
 		generateBarrels();
+		generateMoss(meshMoss);
 	}
 	
 	public Player getPlayer()
@@ -195,7 +200,7 @@ public class Level
 			{
 				if(level.getPixel(i, j)==AMMO)
 				{
-					ammo.add(new Ammo(new Vector3f((i+0.5f)*CUBE_HEIGHT,0, (j+0.5f)*CUBE_LENGTH)));
+					ammo.add(new Ammo(new Vector3f((i+0.5f)*CUBE_HEIGHT,-0.125f, (j+0.5f)*CUBE_LENGTH)));
 				}
 				
 			}
@@ -248,7 +253,7 @@ public class Level
 			
 			for(int i = 0; i < level.getWidth(); i++)
 				for(int j = 0; j < level.getHeight(); j++)
-					if(level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==BLACK || level.getPixel(i, j)==EXIT_POINT)
+					if(level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==BLACK || level.getPixel(i, j)==EXIT_POINT || level.getPixel(i, j)==MOSS)
 						collisionVector = collisionVector.multiply(AABB(oldPos2, newPos2, objectSize, blockSize.multiply(new Vector2f(i,j)), blockSize));
 		}
 		
@@ -460,6 +465,10 @@ public class Level
 		shaderExitPoint.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialExitPoint);
 		meshExitPoint.draw();
 		
+		shaderMoss.bind();
+		shaderMoss.updateUniforms(transform.getTransformation(), transform.getProjectedTransformation(), materialMoss);
+		meshMoss.draw();
+		
 		for(ExplosiveBarrel eb:barrelsInLevel)
 		{
 			eb.render();
@@ -510,7 +519,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==EXIT_POINT)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==EXIT_POINT || level.getPixel(i, j)==MOSS)
 					continue;
 				
 				float xHigh=1;
@@ -594,7 +603,7 @@ public class Level
 			for(int j=0;j<level.getHeight();j++)
 			{
 				
-				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT || level.getPixel(i, j)==MOSS)
 					continue;
 				
 				float xHigh=1;
@@ -676,7 +685,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT || level.getPixel(i, j)==MOSS)
 					continue;
 				
 				float xHigh=1;
@@ -754,6 +763,85 @@ public class Level
 		
 	}
 	
+	private void generateMoss(Mesh m)
+	{
+		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
+		ArrayList<Integer> indices=new ArrayList<Integer>();
+		for(int i=0;i<level.getWidth();i++)
+		{
+			for(int j=0;j<level.getHeight();j++)
+			{
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT || level.getPixel(i, j)==MOSS)
+					continue;
+				
+				float xHigh=1;
+				float xLow=0;
+				float yHigh=1;
+				float yLow=0;
+				
+				//Wall
+				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==PLAYER || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS || level.getPixel(i, j)==EXPLOSIVE_BARRELS)
+				{
+					if(level.getPixel(i, j-1)==MOSS)
+					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						addFace(indices, vertices.size(), false);
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+					if(level.getPixel(i, j+1)==MOSS)
+					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						addFace(indices, vertices.size(), true);
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+					}
+					
+				
+					if(level.getPixel(i-1, j)==MOSS)
+					{
+						collisionStart.add(new Vector2f(i*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f(i*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						addFace(indices, vertices.size(), true);
+
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+						vertices.add(new Vertex(new Vector3f(i*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+					}	
+					
+					
+					if(level.getPixel(i+1, j)==MOSS)
+					{
+						collisionStart.add(new Vector2f((i+1)*CUBE_WIDTH,j*CUBE_LENGTH));
+						collisionEnd.add(new Vector2f((i+1)*CUBE_WIDTH,(j+1)*CUBE_LENGTH));
+						addFace(indices, vertices.size(), false);
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,j*CUBE_LENGTH), new Vector2f(xHigh,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,0,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yHigh)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,(j+1)*CUBE_LENGTH), new Vector2f(xLow,yLow)));
+						vertices.add(new Vertex(new Vector3f((i+1)*CUBE_WIDTH,CUBE_HEIGHT,j*CUBE_LENGTH), new Vector2f(xHigh,yLow)));
+					}
+					
+				}
+			}
+		}
+		
+		Vertex[] verticesArray=new Vertex[vertices.size()];
+		Integer[] indicesArray=new Integer[indices.size()];
+		
+		vertices.toArray(verticesArray);
+		indices.toArray(indicesArray);
+		m.addVertices(verticesArray, Util.toIntArray(indicesArray));
+		
+	}
+	
 	private void generateWall(Mesh mNormal)
 	{
 		ArrayList<Vertex> vertices=new ArrayList<Vertex>();
@@ -763,7 +851,7 @@ public class Level
 		{
 			for(int j=0;j<level.getHeight();j++)
 			{
-				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT)
+				if(level.getPixel(i, j)==BLACK || level.getPixel(i, j)==GRAFITTI || level.getPixel(i, j)==PICTURE_FRAME || level.getPixel(i, j)==EXIT_POINT || level.getPixel(i, j)==MOSS)
 					continue;
 				//Wall
 				if(level.getPixel(i, j)==WHITE || level.getPixel(i, j)==ENEMIES || level.getPixel(i, j)==PLAYER  || level.getPixel(i, j)==AMMO || level.getPixel(i, j)==BANANAS || level.getPixel(i, j)==EXPLOSIVE_BARRELS)

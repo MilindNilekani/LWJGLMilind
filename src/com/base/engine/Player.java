@@ -33,6 +33,7 @@ public class Player {
 	private static final Clip AMMODONE_AUDIO=ResourceLoader.loadAudio("AmmoDone.wav");
 	private static final Clip AMMOREFILL_AUDIO=ResourceLoader.loadAudio("BulletsRefill.wav");
 	private static final Clip PUNCH_AUDIO=ResourceLoader.loadAudio("Punch.wav");
+	private static final Clip HEALTH_AUDIO=ResourceLoader.loadAudio("Health.wav");
 	
 	//TODO:Punch texture scale
 	
@@ -101,6 +102,13 @@ public class Player {
 			playerAnimations.add(ResourceLoader.loadTexture("/gun_fire/3.png"));
 			playerAnimations.add(ResourceLoader.loadTexture("/gun_fire/4.png"));
 			playerAnimations.add(ResourceLoader.loadTexture("/gun_fire/5.png"));
+			
+			playerAnimations.add(ResourceLoader.loadTexture("/punchsprites/1.png"));
+			playerAnimations.add(ResourceLoader.loadTexture("/punchsprites/2.png"));
+			playerAnimations.add(ResourceLoader.loadTexture("/punchsprites/3.png"));
+			playerAnimations.add(ResourceLoader.loadTexture("/punchsprites/4.png"));
+			playerAnimations.add(ResourceLoader.loadTexture("/punchsprites/5.png"));
+			playerAnimations.add(ResourceLoader.loadTexture("/punchsprites/6.png"));
 
 		}
 		//Initiliaze player values
@@ -117,7 +125,7 @@ public class Player {
 		Input.setCursor(false);
 
 		gunFireTime=0;
-		punchMaterial=new Material(ResourceLoader.loadTexture("hand.png"));
+		punchMaterial=new Material(ResourceLoader.loadTexture("/punchsprites/1.png"));
 		
 		//Gun stuff
 		gunTransform=new Transform();
@@ -148,6 +156,10 @@ public class Player {
 	
 	public void damage(int dmg)
 	{
+		if(dmg<0)
+		{
+			AudioUtil.playAudio(HEALTH_AUDIO, 10);
+		}
 		health-=dmg;
 		if(health>MAX_HEALTH)
 			health=MAX_HEALTH;
@@ -319,6 +331,7 @@ public class Player {
 		
 		if(currentWeaponID.equals(PISTOL))
 		{
+			gunTransform.setScale(new Vector3f(1,1,1));
 			if((double)Time.getTime()/Time.SECOND < gunFireTime + GUN_FIRE_ANIMATIONTIME)
 			{
 				if((double)Time.getTime()/Time.SECOND-gunFireTime<0.06)
@@ -367,6 +380,25 @@ public class Player {
 				{
 					gunMaterial.setTexture(playerAnimations.get(0));
 				}
+			}
+		}
+		else if(currentWeaponID.equals(PUNCH))
+		{
+			gunTransform.setScale(new Vector3f(1.3f,1.3f,1.3f));
+			if((double)Time.getTime()/Time.SECOND < gunFireTime + GUN_FIRE_ANIMATIONTIME)
+			{
+				if((double)Time.getTime()/Time.SECOND-gunFireTime<0.05)
+					punchMaterial.setTexture(playerAnimations.get(11));
+				else if((double)Time.getTime()/Time.SECOND-gunFireTime<0.1)
+					punchMaterial.setTexture(playerAnimations.get(12));
+				else if((double)Time.getTime()/Time.SECOND-gunFireTime<0.15)
+					punchMaterial.setTexture(playerAnimations.get(13));
+				else if((double)Time.getTime()/Time.SECOND-gunFireTime<0.2)
+					punchMaterial.setTexture(playerAnimations.get(14));
+				else if((double)Time.getTime()/Time.SECOND-gunFireTime<0.25)
+					punchMaterial.setTexture(playerAnimations.get(15));
+				else
+					punchMaterial.setTexture(playerAnimations.get(16));
 			}
 		}
 		

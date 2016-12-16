@@ -6,7 +6,7 @@ public class Ammo {
 	public static final float PICKUP_DISTANCE = 0.75f;
 	public static final int INCREASE_AMOUNT = 15;
 
-	public static final float SCALE = 0.25f;
+	public static final float SCALE = 0.5f;
 	public static final float SIZEY = SCALE;
 	public static final float SIZEX = (float)((double)SIZEY / (0.67857142857142857142857142857143 * 2.5));
 	public static final float START = 0;
@@ -40,7 +40,7 @@ public class Ammo {
 		
 		shader=new BasicShader();
 
-			material = new Material(ResourceLoader.loadTexture("bullets.png"));
+			material = new Material(ResourceLoader.loadTexture("Ammo.png"));
 		
 
 		transform = new Transform();

@@ -26,8 +26,7 @@ public class ResourceLoader
 		
 		try
 		{
-			InputStream isr=Class.class.getResourceAsStream("/res/audio/"+fileName);
-		    AudioInputStream stream = AudioSystem.getAudioInputStream(isr);
+			AudioInputStream stream = AudioSystem.getAudioInputStream(new File("./res/audio/" + fileName));
 		    clip = (Clip) AudioSystem.getLine(new DataLine.Info(Clip.class, stream.getFormat()));
 		    clip.open(stream);
 		}
@@ -45,8 +44,7 @@ public class ResourceLoader
 		
 		try
 		{
-			InputStream isr=Class.class.getResourceAsStream("/res/textures/"+fileName);
-			BufferedImage image = ImageIO.read(isr);
+			BufferedImage image = ImageIO.read(new File("./res/textures/" + fileName));
 
 			boolean hasAlpha = image.getColorModel().hasAlpha();
 
@@ -102,8 +100,7 @@ public class ResourceLoader
 		
 		try
 		{
-			InputStreamReader isr=new InputStreamReader(Class.class.getResourceAsStream("/res/shaders/"+fileName));
-			shaderReader=new BufferedReader(isr);
+			shaderReader=new BufferedReader(new FileReader("./res/shaders/" + fileName));
 			String line;
 			while((line=shaderReader.readLine())!=null)
 			{
@@ -139,8 +136,7 @@ public class ResourceLoader
 		
 		try
 		{
-			InputStreamReader isr=new InputStreamReader(Class.class.getResourceAsStream("/res/models/"+fileName));
-			meshReader=new BufferedReader(isr);
+			meshReader=new BufferedReader(new FileReader("./res/models/" + fileName));
 			String line;
 			while((line=meshReader.readLine())!=null)
 			{

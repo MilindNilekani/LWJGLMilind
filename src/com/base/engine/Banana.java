@@ -38,7 +38,7 @@ public class Banana {
 		
 		shader=new BasicShader();
 
-			material = new Material(ResourceLoader.loadTexture("banana.png"));
+			material = new Material(ResourceLoader.loadTexture("Banana.png"));
 		
 
 		transform = new Transform();

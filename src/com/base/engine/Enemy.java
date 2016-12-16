@@ -25,6 +25,7 @@ public class Enemy
 	public static final int STATE_ATTACK=2;
 	public static final int STATE_DYING=3;
 	public static final int STATE_DEAD=4;
+	public static final int STATE_HIT=5;
 	
 	public static final int MIN_DAMAGE=5;
 	public static final int MAX_DAMAGE=18;
@@ -85,6 +86,10 @@ public class Enemy
 			animations.add(ResourceLoader.loadTexture("Latest/Death/3.png"));
 			animations.add(ResourceLoader.loadTexture("Latest/Death/4.png"));
 			animations.add(ResourceLoader.loadTexture("Latest/Death/5.png"));
+			
+			animations.add(ResourceLoader.loadTexture("gettingshotsprites/1.png"));
+			animations.add(ResourceLoader.loadTexture("gettingshotsprites/2.png"));
+			animations.add(ResourceLoader.loadTexture("gettingshotsprites/3.png"));
 		}
 		this.id=id;
 		deathTime=0;
